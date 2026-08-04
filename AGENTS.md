@@ -1,0 +1,39 @@
+# 项目上下文（Interview Fullstack Project）
+
+## 项目目标
+这是一个技术面试项目，面试官会重点考察我对架构、技术选型和设计决策的理解，而不仅仅是代码能否运行。
+
+## 技术栈（严格遵守，不得替换）
+### Task 1 - 房价预测服务
+- Python 3.12+
+- FastAPI
+- Scikit-learn
+- 必须提供接口：/predict（支持单个+批量）、/model-info、/health
+- 必须提供 Dockerfile
+- 数据集字段：square_footage, bedrooms, bathrooms, year_built, lot_size, distance_to_city_center, school_rating → 预测 price
+
+### Task 2 - 统一门户
+- 前端：Next.js（App Router）+ Tailwind CSS + React Server Components
+- App1 后端：Python + FastAPI
+- App2 后端：Java 21 + Spring Boot 3.4.4
+- 两个后端都必须调用 Task 1 的预测服务
+- 必须有统一布局和导航
+
+## 工作方式（非常重要）
+1. 每次只完成我当前明确要求的一小步，不要提前实现后续功能。
+2. 写代码之前，必须先用简洁的语言说明：
+   - 这一步的设计思路
+   - 为什么这样选型/这样组织代码
+   - 有哪些关键取舍
+3. 代码要清晰、可读、方便我向面试官解释，优先简单明确，避免过度设计，对于功能模块都要写好注释。
+4. 所有接口和数据字段必须严格对应真实数据集的字段名。
+5. 出错时先分析原因，再给出修复方案，不要直接覆盖大段代码。
+
+## 当前阶段
+（每次开始新阶段时更新这里）
+目前处于：Phase 1 - Task 1
+
+## 禁止事项
+- 不要使用与规定技术栈不符的框架或库
+- 不要生成与当前阶段无关的代码
+- 不要省略设计解释直接甩代码
