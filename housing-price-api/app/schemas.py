@@ -1,111 +1,110 @@
 """
-schemas.py — Pydantic request/response models for the Housing Price API.
+schemas.py — 房价预测 API 的 Pydantic 请求/响应模型。
 
-Uses Pydantic v2 style with Field(description=...) for auto-generated
-OpenAPI/Swagger documentation.
+采用 Pydantic v2 风格，通过 Field(description=...) 自动生成 OpenAPI/Swagger 文档。
 """
 
 from pydantic import BaseModel, Field
 
 
 # ---------------------------------------------------------------------------
-# Request Models
+# 请求模型
 # ---------------------------------------------------------------------------
 
 
 class HouseFeatures(BaseModel):
     """
-    Input features for a single house price prediction.
+    单条房价预测的输入特征。
 
-    All 7 fields correspond exactly to the columns in the training dataset.
-    Validation ensures reasonable value ranges.
+    全部 7 个字段与训练数据集中的列一一对应。
+    校验规则确保输入值在合理范围内。
     """
 
     square_footage: float = Field(
         ...,
         ge=1,
-        description="Total living area in square feet",
+        description="总居住面积（平方英尺）",
         examples=[1500.0],
     )
     bedrooms: int = Field(
         ...,
         ge=1,
         le=10,
-        description="Number of bedrooms",
+        description="卧室数量",
         examples=[3],
     )
     bathrooms: float = Field(
         ...,
         ge=0.5,
         le=10,
-        description="Number of bathrooms (supports half-baths like 1.5)",
+        description="浴室数量（支持半卫，如 1.5）",
         examples=[2.0],
     )
     year_built: int = Field(
         ...,
         ge=1800,
         le=2030,
-        description="Year the house was built",
+        description="建造年份",
         examples=[1997],
     )
     lot_size: float = Field(
         ...,
         ge=1,
-        description="Lot size in square feet",
+        description="地块面积（平方英尺）",
         examples=[6800.0],
     )
     distance_to_city_center: float = Field(
         ...,
         ge=0,
-        description="Distance to city center in miles",
+        description="距市中心距离（英里）",
         examples=[4.1],
     )
     school_rating: float = Field(
         ...,
         ge=0,
         le=10,
-        description="Local school rating (0–10 scale)",
+        description="所在学区学校评分（0–10 分制）",
         examples=[7.6],
     )
 
 
 # ---------------------------------------------------------------------------
-# Response Models
+# 响应模型
 # ---------------------------------------------------------------------------
 
 
 class PredictionResponse(BaseModel):
-    """Response for the /predict endpoint (single or batch)."""
+    """/predict 端点的响应模型（支持单个和批量）。"""
 
     predictions: list[float] = Field(
         ...,
-        description="Predicted house prices. Single prediction → list of 1 element.",
+        description="预测的房价列表。单个预测 → 包含 1 个元素的列表。",
         examples=[[245000.50]],
     )
 
 
 class ModelInfoResponse(BaseModel):
-    """Response for the /model-info endpoint."""
+    """/model-info 端点的响应模型。"""
 
     coefficients: dict[str, float] = Field(
         ...,
-        description="Feature name → coefficient weight (importance and direction)",
+        description="特征名 → 系数权重（表示重要性和影响方向）",
     )
     intercept: float = Field(
         ...,
-        description="Model intercept (base price before feature contributions)",
+        description="模型截距（特征贡献之前的基础价格）",
     )
     metrics: dict[str, float] = Field(
         ...,
-        description="Performance metrics: R², MSE, MAE, RMSE",
+        description="性能指标：R²、MSE、MAE、RMSE",
     )
 
 
 class HealthResponse(BaseModel):
-    """Response for the /health endpoint."""
+    """/health 端点的响应模型。"""
 
     status: str = Field(
         default="healthy",
-        description="Service health status",
+        description="服务健康状态",
         examples=["healthy"],
     )

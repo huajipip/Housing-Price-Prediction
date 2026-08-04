@@ -1,17 +1,17 @@
 # Housing Price Prediction API
 
-A FastAPI-based microservice that predicts house prices using a Linear Regression model trained on property features.
+基于 FastAPI 的微服务，使用线性回归模型根据房产特征预测房价。
 
 ---
 
-## Quick Start
+## 快速开始
 
-### Prerequisites
+### 前置条件
 
 - Python 3.12+
-- Docker (optional, for containerized deployment)
+- Docker（可选，用于容器化部署）
 
-### 1. Train the Model
+### 1. 训练模型
 
 ```bash
 cd housing-price-api
@@ -19,40 +19,40 @@ pip install -r requirements.txt
 python train.py
 ```
 
-This generates model artifacts in `models/`:
-- `scaler.joblib` — StandardScaler for feature normalization
-- `model.joblib` — Trained LinearRegression model
-- `metrics.json` — Performance metrics (R², MSE, MAE, RMSE)
+此命令将在 `models/` 目录下生成模型构件：
+- `scaler.joblib` — StandardScaler 标准化器，用于特征归一化
+- `model.joblib` — 已训练的 LinearRegression 线性回归模型
+- `metrics.json` — 性能指标（R²、MSE、MAE、RMSE）
 
-### 2. Run the API
+### 2. 启动 API
 
-**Option A — Local (development)**
+**方式 A — 本地开发**
 
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-**Option B — Docker (production-like)**
+**方式 B — Docker（类生产环境）**
 
 ```bash
 docker compose up --build
 ```
 
-### 3. Explore the API
+### 3. 探索 API
 
-Open **http://localhost:8000/docs** for interactive Swagger UI documentation.
+打开 **http://localhost:8000/docs** 查看交互式 Swagger UI 文档。
 
 ---
 
-## API Endpoints
+## API 端点
 
-| Method | Path | Description |
+| 方法 | 路径 | 说明 |
 |--------|------|-------------|
-| `POST` | `/predict` | Predict house price(s) — supports single & batch |
-| `GET` | `/model-info` | Model coefficients & performance metrics |
-| `GET` | `/health` | Health check (returns `{"status": "healthy"}`) |
+| `POST` | `/predict` | 预测房价 — 支持单个和批量 |
+| `GET` | `/model-info` | 模型系数与性能指标 |
+| `GET` | `/health` | 健康检查（返回 `{"status": "healthy"}`） |
 
-### `/predict` — Single Prediction
+### `/predict` — 单个预测
 
 ```bash
 curl -X POST http://localhost:8000/predict \
@@ -68,12 +68,12 @@ curl -X POST http://localhost:8000/predict \
   }'
 ```
 
-Response:
+响应：
 ```json
 { "predictions": [250879.73] }
 ```
 
-### `/predict` — Batch Prediction
+### `/predict` — 批量预测
 
 ```bash
 curl -X POST http://localhost:8000/predict \
@@ -84,7 +84,7 @@ curl -X POST http://localhost:8000/predict \
   ]'
 ```
 
-Response:
+响应：
 ```json
 { "predictions": [250879.73, 364551.64] }
 ```
@@ -103,58 +103,58 @@ curl http://localhost:8000/health
 
 ---
 
-## Feature Descriptions
+## 特征说明
 
-| Feature | Type | Description |
+| 特征 | 类型 | 说明 |
 |---------|------|-------------|
-| `square_footage` | float | Total living area (sq ft) |
-| `bedrooms` | int | Number of bedrooms |
-| `bathrooms` | float | Number of bathrooms (supports 1.5, 2.5, etc.) |
-| `year_built` | int | Year of construction |
-| `lot_size` | float | Lot size (sq ft) |
-| `distance_to_city_center` | float | Distance to city center (miles) |
-| `school_rating` | float | Local school rating (0–10) |
+| `square_footage` | float | 总居住面积（平方英尺） |
+| `bedrooms` | int | 卧室数量 |
+| `bathrooms` | float | 浴室数量（支持 1.5、2.5 等半卫） |
+| `year_built` | int | 建造年份 |
+| `lot_size` | float | 地块面积（平方英尺） |
+| `distance_to_city_center` | float | 距市中心距离（英里） |
+| `school_rating` | float | 所在学区学校评分（0–10 分制） |
 
 ---
 
-## Model Details
+## 模型详情
 
-- **Algorithm**: Linear Regression (scikit-learn)
-- **Preprocessing**: StandardScaler (zero mean, unit variance)
-- **Training data**: 50 synthetic house records
-- **R²**: 0.9911
-- **RMSE**: $7,510.99
+- **算法**：线性回归（scikit-learn）
+- **预处理**：StandardScaler（零均值、单位方差）
+- **训练数据**：50 条合成房产记录
+- **R²**：0.9911
+- **RMSE**：$7,510.99
 
 ---
 
-## Project Structure
+## 项目结构
 
 ```
 housing-price-api/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py          # FastAPI app with 3 endpoints
-│   ├── model.py         # Model loader + predictor class
-│   └── schemas.py       # Pydantic request/response models
+│   ├── main.py          # FastAPI 应用（含 3 个端点）
+│   ├── model.py         # 模型加载器 + 预测器类
+│   └── schemas.py       # Pydantic 请求/响应模型
 ├── models/
-│   ├── scaler.joblib    # Fitted StandardScaler
-│   ├── model.joblib     # Trained LinearRegression
-│   └── metrics.json     # Performance metrics
-├── train.py             # Standalone training script
-├── requirements.txt     # Python dependencies
-├── Dockerfile           # Container image definition
-├── docker-compose.yml   # Docker Compose orchestration
-└── README.md            # This file
+│   ├── scaler.joblib    # 已拟合的 StandardScaler
+│   ├── model.joblib     # 已训练的 LinearRegression
+│   └── metrics.json     # 性能指标
+├── train.py             # 独立训练脚本
+├── requirements.txt     # Python 依赖
+├── Dockerfile           # 容器镜像定义
+├── docker-compose.yml   # Docker Compose 编排文件
+└── README.md            # 本文件
 ```
 
 ---
 
-## Design Decisions
+## 设计决策
 
-1. **Training outside Docker** — Model artifacts are generated with `python train.py` and copied into the image. This keeps the Dockerfile simple (single-stage), makes the model transparent and inspectable, and enables fast iteration (change params → retrain → restart container).
+1. **在 Docker 外部训练** — 模型构件通过 `python train.py` 生成后复制到镜像中。这样能让 Dockerfile 保持简洁（单阶段构建），使模型透明可审查，并支持快速迭代（修改参数 → 重新训练 → 重启容器）。
 
-2. **Linear Regression** — Chosen for full interpretability. Each coefficient directly represents a feature's contribution to the predicted price. No black-box behavior — ideal for an interview demonstration.
+2. **线性回归** — 选择它的原因是完全可解释性。每个系数直接反映该特征对预测价格的贡献，无黑盒行为 — 非常适合面试展示。
 
-3. **StandardScaler** — Features span vastly different ranges (e.g., `square_footage` ~1000–2400 vs `school_rating` ~6–10). Standardization ensures coefficients are comparable and the model trains with numerical stability.
+3. **StandardScaler 标准化** — 特征量纲差异很大（例如 `square_footage` 约 1000–2400，而 `school_rating` 约 6–10）。标准化确保系数可比较，且模型训练具有数值稳定性。
 
-4. **Single + Batch via Union** — The `/predict` endpoint accepts both a single object and a list of objects, normalizing the input internally. Reduces API surface while maintaining flexibility.
+4. **单个 + 批量统一端点** — `/predict` 端点通过 Union 类型同时接受单个对象和对象列表，内部自动归一化处理。减少了 API 表面积，同时保持了灵活性。

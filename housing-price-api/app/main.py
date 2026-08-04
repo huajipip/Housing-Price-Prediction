@@ -1,12 +1,12 @@
 """
-main.py — FastAPI application entry point for the Housing Price API.
+main.py — 房价预测 API 的 FastAPI 应用入口。
 
-Three endpoints:
-    POST /predict     — Single or batch house price prediction
-    GET  /model-info  — Model coefficients and performance metrics
-    GET  /health      — Service health check
+三个端点：
+    POST /predict     — 单个或批量房价预测
+    GET  /model-info  — 模型系数与性能指标
+    GET  /health      — 服务健康检查
 
-The model is loaded once at startup via the "startup" event handler.
+模型在应用启动时通过 "startup" 事件处理器一次性加载到内存中。
 """
 
 import logging
@@ -25,7 +25,7 @@ from app.schemas import (
 )
 
 # ---------------------------------------------------------------------------
-# Logging
+# 日志配置
 # ---------------------------------------------------------------------------
 
 logging.basicConfig(
@@ -36,7 +36,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# FastAPI App
+# FastAPI 应用实例
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
@@ -56,26 +56,26 @@ app = FastAPI(
 
 
 # ---------------------------------------------------------------------------
-# Startup: load model into memory
+# 启动事件：将模型加载到内存
 # ---------------------------------------------------------------------------
 
 
 @app.on_event("startup")
 def load_model() -> None:
-    """Load the pre-trained model artifacts into memory on app startup."""
+    """应用启动时将预训练的模型构件加载到内存中。"""
     global global_predictor
     global_predictor = HousePricePredictor()
-    logger.info("Model loaded and ready for predictions.")
+    logger.info("模型已加载，可以开始预测。")
 
 
 # ---------------------------------------------------------------------------
-# Middleware: request logging
+# 中间件：请求日志
 # ---------------------------------------------------------------------------
 
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Log each HTTP request with method, path, and duration."""
+    """记录每个 HTTP 请求的方法、路径和耗时。"""
     start = time.perf_counter()
     response = await call_next(request)
     duration_ms = (time.perf_counter() - start) * 1000
@@ -90,31 +90,31 @@ async def log_requests(request: Request, call_next):
 
 
 # ---------------------------------------------------------------------------
-# Global exception handler
+# 全局异常处理器
 # ---------------------------------------------------------------------------
 
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    """Catch any unhandled exceptions and return a clean JSON error."""
-    logger.error("Unhandled error on %s %s: %s", request.method, request.url.path, exc)
+    """捕获所有未处理的异常，返回干净的 JSON 错误响应。"""
+    logger.error("未处理的异常 %s %s: %s", request.method, request.url.path, exc)
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error. Please check the logs."},
+        content={"detail": "服务器内部错误，请检查日志。"},
     )
 
 
 # ---------------------------------------------------------------------------
-# Endpoints
+# API 端点
 # ---------------------------------------------------------------------------
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def health() -> HealthResponse:
     """
-    Health check endpoint.
+    健康检查端点。
 
-    Returns the service status. Used by Docker healthcheck and load balancers.
+    返回服务运行状态，供 Docker healthcheck 和负载均衡器使用。
     """
     return HealthResponse(status="healthy")
 
@@ -122,16 +122,14 @@ async def health() -> HealthResponse:
 @app.get("/model-info", response_model=ModelInfoResponse, tags=["Model"])
 async def model_info() -> ModelInfoResponse:
     """
-    Return the trained model's coefficients and performance metrics.
+    返回已训练模型的系数与性能指标。
 
-    Coefficients represent the weight each feature contributes to the
-    predicted price (on standardized features). Metrics include R², MSE,
-    MAE, and RMSE.
+    系数代表每个特征在标准化后对预测价格的贡献权重。指标包括 R²、MSE、MAE 和 RMSE。
     """
     if global_predictor is None:
         return JSONResponse(
             status_code=503,
-            content={"detail": "Model not loaded yet. Please retry shortly."},
+            content={"detail": "模型尚未加载完成，请稍后重试。"},
         )
 
     info = global_predictor.get_model_info()
@@ -143,12 +141,12 @@ async def predict(
     payload: Union[HouseFeatures, list[HouseFeatures]],
 ) -> PredictionResponse:
     """
-    Predict house prices for one or more properties.
+    预测一处或多处房产的价格。
 
-    - **Single prediction**: Send a single HouseFeatures object
-    - **Batch prediction**: Send a list of HouseFeatures objects
+    - **单个预测**：发送单个 HouseFeatures 对象
+    - **批量预测**：发送 HouseFeatures 对象列表
 
-    Example single request:
+    单个请求示例：
     ```json
     {
         "square_footage": 1550,
@@ -161,7 +159,7 @@ async def predict(
     }
     ```
 
-    Example batch request:
+    批量请求示例：
     ```json
     [
         { "square_footage": 1550, "bedrooms": 3, ... },
@@ -172,16 +170,16 @@ async def predict(
     if global_predictor is None:
         return JSONResponse(
             status_code=503,
-            content={"detail": "Model not loaded yet. Please retry shortly."},
+            content={"detail": "模型尚未加载完成，请稍后重试。"},
         )
 
-    # Normalize: single object → list of one
+    # 归一化处理：单个对象 → 单元素列表
     if isinstance(payload, HouseFeatures):
         records = [payload.model_dump()]
     else:
         records = [item.model_dump() for item in payload]
 
-    # Predict
+    # 执行预测
     predictions = global_predictor.predict(records)
 
     return PredictionResponse(predictions=predictions)

@@ -1,12 +1,12 @@
 """
-model.py — Model loading and inference wrapper for the House Price Predictor.
+model.py — 房价预测器的模型加载与推理封装。
 
-Provides a HousePricePredictor class that:
-    1. Loads pre-trained scaler, model, and metrics from disk
-    2. Exposes predict() for single/batch inference
-    3. Exposes get_model_info() for the /model-info endpoint
+提供 HousePricePredictor 类，功能包括：
+    1. 从磁盘加载预训练的标准化器、模型和评估指标
+    2. 对外暴露 predict() 方法，支持单条/批量推理
+    3. 对外暴露 get_model_info() 方法，供 /model-info 端点使用
 
-The model artifacts are generated OUTSIDE Docker by `python train.py`.
+模型构件由 `python train.py` 在 Docker 外部生成。
 """
 
 import json
@@ -22,8 +22,8 @@ from sklearn.preprocessing import StandardScaler
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Feature column order — must match train.py EXACTLY
-# This is the contract between train.py and model.py
+# 特征列顺序 — 必须与 train.py 严格一致
+# 这是 train.py 和 model.py 之间的数据契约
 # ---------------------------------------------------------------------------
 
 FEATURE_COLUMNS = [
@@ -36,7 +36,7 @@ FEATURE_COLUMNS = [
     "school_rating",
 ]
 
-# Paths relative to this module
+# 模型文件路径（相对于本模块）
 _MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 _SCALER_PATH = _MODELS_DIR / "scaler.joblib"
 _MODEL_PATH = _MODELS_DIR / "model.joblib"
@@ -44,15 +44,15 @@ _METRICS_PATH = _MODELS_DIR / "metrics.json"
 
 
 # ---------------------------------------------------------------------------
-# Predictor
+# 预测器类
 # ---------------------------------------------------------------------------
 
 
 class HousePricePredictor:
     """
-    Wrapper around the trained StandardScaler + LinearRegression pipeline.
+    封装了 StandardScaler + LinearRegression 的推理管道。
 
-    Usage:
+    使用示例：
         predictor = HousePricePredictor()
         predictions = predictor.predict([
             {"square_footage": 1500, "bedrooms": 3, ...},
@@ -62,7 +62,7 @@ class HousePricePredictor:
     """
 
     def __init__(self) -> None:
-        """Load model artifacts from disk. Called once at app startup."""
+        """从磁盘加载模型构件。应用启动时调用一次。"""
         self._scaler: StandardScaler = joblib.load(_SCALER_PATH)
         self._model: LinearRegression = joblib.load(_MODEL_PATH)
 
@@ -70,58 +70,58 @@ class HousePricePredictor:
             self._metrics: dict = json.load(f)
 
         logger.info(
-            "Model loaded successfully. R²=%.4f, Features=%d",
+            "模型加载成功。R²=%.4f, 特征数=%d",
             self._metrics["r2"],
             len(FEATURE_COLUMNS),
         )
 
     def predict(self, features: list[dict[str, float]]) -> list[float]:
         """
-        Predict house prices for one or more property records.
+        预测一条或多条房产记录的价格。
 
-        Args:
-            features: List of dicts, each with the 7 feature keys.
-                      Example: [{"square_footage": 1500, "bedrooms": 3, ...}]
+        参数：
+            features: 字典列表，每个字典包含 7 个特征键。
+                      示例：[{"square_footage": 1500, "bedrooms": 3, ...}]
 
-        Returns:
-            List of predicted prices in the same currency unit as training data.
+        返回值：
+            预测价格列表，单位与训练数据中的货币单位一致。
         """
         if not features:
             return []
 
-        # Convert list of dicts → DataFrame with the correct column order
+        # 将字典列表按正确的列顺序转换为 DataFrame
         df = pd.DataFrame(features)
 
-        # Ensure all required columns are present
+        # 确保所有必需的列都存在
         missing = set(FEATURE_COLUMNS) - set(df.columns)
         if missing:
             raise ValueError(
-                f"Missing required feature columns: {missing}. "
-                f"Required: {FEATURE_COLUMNS}"
+                f"缺少必需的特征列：{missing}。"
+                f"必需的列：{FEATURE_COLUMNS}"
             )
 
-        # Reorder columns to match training order (critical for scaler/model)
+        # 按训练时的列顺序重排（对标准化器/模型至关重要）
         df = df[FEATURE_COLUMNS]
 
-        # Standardize + predict
+        # 标准化 + 预测
         X_scaled = self._scaler.transform(df)
         y_pred = self._model.predict(X_scaled)
 
-        # Round to 2 decimal places for cleaner output
+        # 保留两位小数，输出更整洁
         return np.round(y_pred, 2).tolist()
 
     def get_model_info(self) -> dict:
         """
-        Return model coefficients and performance metrics.
+        返回模型系数与性能指标。
 
-        Returns:
+        返回格式：
             {
                 "coefficients": {"square_footage": 123.4, ...},
                 "intercept": 50000.0,
                 "metrics": {"r2": 0.99, "mse": ..., "mae": ..., "rmse": ...}
             }
         """
-        # Build coefficient map: feature_name → weight
+        # 构建系数映射：特征名 → 权重
         coefficients = dict(zip(FEATURE_COLUMNS, self._model.coef_.tolist()))
 
         return {
@@ -132,7 +132,7 @@ class HousePricePredictor:
 
 
 # ---------------------------------------------------------------------------
-# Module-level singleton (lazy init; instantiated in main.py startup event)
+# 模块级单例（延迟初始化；在 main.py 的 startup 事件中实例化）
 # ---------------------------------------------------------------------------
 
 predictor: HousePricePredictor | None = None

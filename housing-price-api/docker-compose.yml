@@ -1,9 +1,9 @@
 # ============================================================
-# docker-compose.yml — Housing Price Prediction API
+# docker-compose.yml — 房价预测 API
 #
-# Single-service orchestration for the FastAPI prediction API.
-# Model artifacts must be pre-generated via `python train.py`
-# before running `docker compose up --build`.
+# FastAPI 预测 API 的单服务编排。
+# 模型构件必须通过 `python train.py` 预先生成，
+# 然后才能执行 `docker compose up --build`。
 # ============================================================
 
 services:
