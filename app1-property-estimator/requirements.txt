@@ -1,5 +1,6 @@
-# App1: requirements.txt — Step 3 将添加完整依赖
-fastapi==0.115.0
-uvicorn[standard]==0.30.0
-httpx==0.27.0
-pydantic==2.9.0
+# App1: Property Value Estimator 依赖
+# 版本使用 >= 而非 ==，与 Task 1 的 venv 保持兼容
+fastapi>=0.100.0
+uvicorn[standard]>=0.30.0
+httpx>=0.27.0
+pydantic>=2.0.0
