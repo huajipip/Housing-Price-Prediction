@@ -24,3 +24,20 @@ Thumbs.db
 /my-asset/Interview Tasks Fullstack (1).txt
 /my-asset/Task2-Requirements.md
 /plan.md
+
+
+# Java / Maven
+app2-market-analysis/target/
+*.class
+*.jar
+*.war
+
+# Next.js / Node
+node_modules/
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
