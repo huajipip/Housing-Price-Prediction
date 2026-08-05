@@ -31,7 +31,7 @@
 
 ## 当前阶段
 （每次开始新阶段时更新这里）
-目前处于：Task 2 — Step 3 完成（App1 FastAPI 后端就绪，准备 Step 4）
+目前处于：Task 2 — Step 4 完成（App2 Spring Boot 骨架就绪，准备 Step 5）
 
 ## 禁止事项
 - 不要使用与规定技术栈不符的框架或库
