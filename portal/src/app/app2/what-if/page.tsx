@@ -6,13 +6,12 @@
  * 功能：
  * - 7 个基准特征输入（预填数据集均值）
  * - 选择变化特征 + 滑块调整范围
- * - 300ms 防抖后批量调用 App2 /what-if
+ * - 300ms 防抖后自动调用 App2 /what-if（也支持手动触发）
  * - 折线图展示「特征值 vs 预测价格」
- * - 支持叠加多条曲线（多特征对比）
  * - "恢复默认"按钮
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
     LineChart,
     Line,
@@ -24,9 +23,9 @@ import {
     Legend,
 } from "recharts";
 import { FIELD_META, DEFAULT_FEATURES } from "@/lib/constants";
-import { app2Api } from "@/lib/api";
+import { app1Api, app2Api } from "@/lib/api";
 import { useDebounce } from "@/hooks/useDebounce";
-import type { HouseFeatures, WhatIfResponse } from "@/lib/types";
+import type { HouseFeatures, FeatureStats, WhatIfResponse } from "@/lib/types";
 
 const COLORS = ["#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6"];
 
@@ -38,10 +37,27 @@ export default function WhatIfPage() {
     // 当前变化特征
     const [varyFeature, setVaryFeature] = useState("square_footage");
 
-    // 范围滑块值
+    // 训练数据特征统计（从 /model-info 动态获取）
+    const [featureStats, setFeatureStats] =
+        useState<Record<string, FeatureStats> | null>(null);
+
+    // 页面加载时获取模型信息（含训练数据范围）
+    useEffect(() => {
+        app1Api.getModelInfo().then((data) => {
+            const stats = (data as Record<string, unknown>).feature_stats;
+            if (stats) setFeatureStats(stats as Record<string, FeatureStats>);
+        }).catch(() => { /* 静默失败，使用 FIELD_META 兜底 */ });
+    }, []);
+
+    // 范围滑块值：优先用训练数据范围，兜底用 FIELD_META
+    const stats = featureStats?.[varyFeature];
     const field = FIELD_META[varyFeature as keyof typeof FIELD_META];
-    const [rangeMin, setRangeMin] = useState(field?.min ?? 500);
-    const [rangeMax, setRangeMax] = useState(field?.max ?? 3000);
+    const [rangeMin, setRangeMin] = useState(
+        stats?.min ?? field?.min ?? 0
+    );
+    const [rangeMax, setRangeMax] = useState(
+        stats?.max ?? field?.max ?? 100
+    );
 
     // 累积的曲线数据（支持叠加）
     const [curves, setCurves] = useState<
@@ -55,17 +71,26 @@ export default function WhatIfPage() {
     const debouncedMin = useDebounce(rangeMin, 300);
     const debouncedMax = useDebounce(rangeMax, 300);
 
-    /** 执行 What-If 分析 */
-    const runAnalysis = useCallback(async () => {
+    // 跳过组件首次挂载时的自动触发
+    const isInitialMount = useRef(true);
+
+    /** 执行 What-If 分析（接受 min/max 参数以支持防抖自动触发） */
+    const runAnalysis = useCallback(async (min: number, max: number) => {
+        // 前端校验：最小值必须小于最大值
+        if (min >= max) {
+            setError(`范围无效：最小值 (${min}) 必须小于最大值 (${max})`);
+            return;
+        }
         setIsLoading(true);
         setError(null);
         try {
             const res = await app2Api.whatIf({
                 baseFeatures,
                 varyFeature,
-                varyMin: rangeMin,
-                varyMax: rangeMax,
+                varyMin: min,
+                varyMax: max,
                 steps: 20,
+                step: field.step,
             });
 
             // 构建 Recharts 兼容的数据格式
@@ -74,7 +99,7 @@ export default function WhatIfPage() {
                 [varyFeature]: dp.predictedPrice,
             }));
 
-            // 更新或添加曲线
+            // 替换当前特征的曲线（同一特征只保留最新一条）
             setCurves((prev) => {
                 const existing = prev.findIndex((c) => c.feature === varyFeature);
                 if (existing >= 0) {
@@ -89,7 +114,24 @@ export default function WhatIfPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [baseFeatures, varyFeature, rangeMin, rangeMax]);
+    }, [baseFeatures, varyFeature]);
+
+    // 用 ref 存储最新 runAnalysis，避免 varyFeature/baseFeatures 变化时
+    // useEffect 用旧的 debouncedMin/Max 触发竞态请求（导致后端 500）
+    const runAnalysisRef = useRef(runAnalysis);
+    useEffect(() => {
+        runAnalysisRef.current = runAnalysis;
+    });
+
+    // 防抖自动触发：仅当滑块防抖值变化时触发，
+    // 始终通过 ref 使用最新的 runAnalysis（避免闭包过期）
+    useEffect(() => {
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+        runAnalysisRef.current(debouncedMin, debouncedMax);
+    }, [debouncedMin, debouncedMax]);
 
     /** 清除所有曲线 */
     const clearCurves = () => setCurves([]);
@@ -98,14 +140,17 @@ export default function WhatIfPage() {
     const resetDefaults = () => {
         setBaseFeatures(DEFAULT_FEATURES);
         setVaryFeature("square_footage");
+        const sfStats = featureStats?.square_footage;
         const sf = FIELD_META.square_footage;
-        setRangeMin(sf.min);
-        setRangeMax(sf.max);
+        setRangeMin(sfStats?.min ?? sf.min);
+        setRangeMax(sfStats?.max ?? sf.max);
         setCurves([]);
         setError(null);
     };
 
-    /** 合并所有曲线数据（按 x 值对齐） */
+    /** 判断当前范围是否超出训练数据范围 */
+    const isExtrapolating =
+        stats && (rangeMin < stats.min || rangeMax > stats.max);
     const mergedData = (() => {
         const map = new Map<number, Record<string, number>>();
         curves.forEach((curve) => {
@@ -116,6 +161,14 @@ export default function WhatIfPage() {
         });
         return Array.from(map.values()).sort((a, b) => a.x - b.x);
     })();
+
+    /** 检测是否有数据点预测为负（模型外推失效的标志） */
+    const hasNegativePrediction = curves.some((c) =>
+        c.data.some((d) => {
+            const val = d[c.feature];
+            return typeof val === "number" && val < 0;
+        })
+    );
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -166,11 +219,13 @@ export default function WhatIfPage() {
                         <select
                             value={varyFeature}
                             onChange={(e) => {
-                                setVaryFeature(e.target.value);
-                                const f =
-                                    FIELD_META[e.target.value as keyof typeof FIELD_META];
-                                setRangeMin(f.min);
-                                setRangeMax(f.max);
+                                const newFeature = e.target.value;
+                                setVaryFeature(newFeature);
+                                const newStats = featureStats?.[newFeature];
+                                const f = FIELD_META[newFeature as keyof typeof FIELD_META];
+                                setRangeMin(newStats?.min ?? f.min);
+                                setRangeMax(newStats?.max ?? f.max);
+                                setCurves([]);
                             }}
                             className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
                         >
@@ -186,6 +241,11 @@ export default function WhatIfPage() {
                     <div>
                         <label className="mb-1 block text-xs text-gray-500">
                             最小值: <span className="font-medium">{rangeMin}</span>
+                            {stats && (
+                                <span className="ml-1 text-gray-400">
+                                    (训练: {stats.min})
+                                </span>
+                            )}
                         </label>
                         <input
                             type="range"
@@ -202,6 +262,11 @@ export default function WhatIfPage() {
                     <div>
                         <label className="mb-1 block text-xs text-gray-500">
                             最大值: <span className="font-medium">{rangeMax}</span>
+                            {stats && (
+                                <span className="ml-1 text-gray-400">
+                                    (训练: {stats.max})
+                                </span>
+                            )}
                         </label>
                         <input
                             type="range"
@@ -216,7 +281,7 @@ export default function WhatIfPage() {
 
                     {/* 按钮 */}
                     <button
-                        onClick={runAnalysis}
+                        onClick={() => runAnalysis(debouncedMin, debouncedMax)}
                         disabled={isLoading}
                         className="rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
                     >
@@ -236,6 +301,22 @@ export default function WhatIfPage() {
                     </button>
                 </div>
             </div>
+
+            {/* 外推警告 */}
+            {isExtrapolating && (
+                <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+                    ⚠️ 当前范围超出训练数据（{field.label}: {stats?.min}–{stats?.max}）。
+                    线性模型在外推时可能产生不准确的预测。
+                </div>
+            )}
+
+            {/* 负价格警告 */}
+            {hasNegativePrediction && (
+                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                    ⚠️ 检测到负预测价格。当前模型在训练数据范围外线性外推时不可靠，
+                    请将特征范围缩小到训练数据范围内。
+                </div>
+            )}
 
             {/* 错误 */}
             {error && (
@@ -264,6 +345,7 @@ export default function WhatIfPage() {
                                 }}
                             />
                             <YAxis
+                                domain={[0, "auto"]}
                                 tickFormatter={(v) =>
                                     `$${(Number(v) / 1000).toFixed(0)}k`
                                 }
