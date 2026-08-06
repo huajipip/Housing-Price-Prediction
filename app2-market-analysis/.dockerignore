@@ -1,0 +1,36 @@
+# ============================================================
+# .dockerignore — App2 Market Analysis 后端 (Java Maven)
+# 排除本地 Maven 构建产物，Dockerfile 自行 mvn package
+# ============================================================
+
+# Maven 构建产物（Dockerfile 中 mvn package 生成）
+target/
+
+# Maven 本地仓库（由 Docker 镜像层的 mvn 缓存管理）
+.mvn/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# 文档
+README.md
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+
+# 环境变量
+.env
+.env.*

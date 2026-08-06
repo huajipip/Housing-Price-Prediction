@@ -1,0 +1,41 @@
+# ============================================================
+# .dockerignore — App1 Property Estimator 后端 (Python)
+# 排除开发环境产物，Dockerfile 自行 pip install
+# ============================================================
+
+# Python 字节码
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 测试
+tests/
+test_*.py
+*_test.py
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log
+
+# 环境变量
+.env
+.env.*
