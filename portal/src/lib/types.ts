@@ -62,6 +62,21 @@ export interface CorrelationResponse {
     correlations: Record<string, number>;
 }
 
+/** 训练数据特征统计（min/max/mean），由 /model-info 返回 */
+export interface FeatureStats {
+    min: number;
+    max: number;
+    mean: number;
+}
+
+/** /model-info 完整响应 */
+export interface ModelInfo {
+    coefficients: Record<string, number>;
+    intercept: number;
+    metrics: { r2: number; mse: number; mae: number; rmse: number };
+    feature_stats: Record<string, FeatureStats>;
+}
+
 /** What-If 请求 (App2) */
 export interface WhatIfRequest {
     baseFeatures: HouseFeatures;
@@ -69,6 +84,7 @@ export interface WhatIfRequest {
     varyMin: number;
     varyMax: number;
     steps: number;
+    step: number;
 }
 
 /** What-If 响应 (App2) */
