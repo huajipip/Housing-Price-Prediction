@@ -100,8 +100,8 @@ services:
     networks:
       - app-network
     environment:
-      - APP1_BACKEND_URL=http://app1-backend:8001
-      - APP2_BACKEND_URL=http://app2-backend:8002
+      - NEXT_PUBLIC_APP1_URL=http://app1-backend:8001
+      - NEXT_PUBLIC_APP2_URL=http://app2-backend:8002
     depends_on:
       - app1-backend
       - app2-backend
