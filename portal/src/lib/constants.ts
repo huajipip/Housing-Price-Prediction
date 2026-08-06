@@ -34,14 +34,16 @@ export interface FieldMeta {
     placeholder: string;
 }
 
+// 训练数据范围（由 train.py 计算，与 feature_stats.json 保持一致）
+// 用于 what-if 滑块的默认范围，避免无意义的外推
 export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
     square_footage: {
         key: "square_footage",
         label: "居住面积",
         unit: "sq ft",
         type: "integer",
-        min: 500,
-        max: 10000,
+        min: 980,
+        max: 2400,
         step: 50,
         placeholder: "例: 1500",
     },
@@ -50,8 +52,8 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "卧室数量",
         unit: "间",
         type: "integer",
-        min: 1,
-        max: 10,
+        min: 2,
+        max: 4,
         step: 1,
         placeholder: "例: 3",
     },
@@ -60,8 +62,8 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "浴室数量",
         unit: "间",
         type: "number",
-        min: 0.5,
-        max: 10,
+        min: 1,
+        max: 3,
         step: 0.5,
         placeholder: "例: 2",
     },
@@ -70,8 +72,8 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "建造年份",
         unit: "年",
         type: "integer",
-        min: 1800,
-        max: 2030,
+        min: 1978,
+        max: 2012,
         step: 1,
         placeholder: "例: 1997",
     },
@@ -80,8 +82,8 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "地块面积",
         unit: "sq ft",
         type: "integer",
-        min: 1000,
-        max: 50000,
+        min: 4400,
+        max: 10500,
         step: 100,
         placeholder: "例: 6800",
     },
@@ -90,8 +92,8 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "距市中心距离",
         unit: "mile",
         type: "number",
-        min: 0,
-        max: 50,
+        min: 2.1,
+        max: 8.2,
         step: 0.1,
         placeholder: "例: 4.1",
     },
@@ -100,14 +102,14 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
         label: "学校评分",
         unit: "/10",
         type: "number",
-        min: 0,
-        max: 10,
+        min: 6.5,
+        max: 9.1,
         step: 0.1,
         placeholder: "例: 7.6",
     },
 };
 
-/** 默认房源特征值（用于 What-If 预填） */
+/** 默认房源特征值（训练数据均值，用于 What-If 预填） */
 export const DEFAULT_FEATURES: HouseFeatures = {
     square_footage: 1690,
     bedrooms: 3,
