@@ -42,6 +42,13 @@ export interface StatsResponse {
     minPrice: number;
     maxPrice: number;
     stdDevPrice: number;
+    meanSquareFootage: number;
+    meanBedrooms: number;
+    meanBathrooms: number;
+    meanYearBuilt: number;
+    meanLotSize: number;
+    meanDistanceToCityCenter: number;
+    meanSchoolRating: number;
 }
 
 /** 价格分布响应 (App2) */
