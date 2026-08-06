@@ -36,16 +36,8 @@ DATASET_PATH = Path(__file__).resolve().parent.parent / "my-asset" / "House Pric
 # 模型构件保存目录
 MODELS_DIR = Path(__file__).resolve().parent / "models"
 
-# 特征列（必须与数据集列名严格一致）
-FEATURE_COLUMNS = [
-    "square_footage",
-    "bedrooms",
-    "bathrooms",
-    "year_built",
-    "lot_size",
-    "distance_to_city_center",
-    "school_rating",
-]
+# 特征列 — 从 model.py 导入，确保与推理时完全一致
+from app.model import FEATURE_COLUMNS
 
 # 目标列
 TARGET_COLUMN = "price"
