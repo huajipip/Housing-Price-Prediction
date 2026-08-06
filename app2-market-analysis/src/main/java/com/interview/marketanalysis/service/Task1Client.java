@@ -39,6 +39,9 @@ public class Task1Client {
 
         @SuppressWarnings("unchecked")
         List<Number> predictions = (List<Number>) response.get("predictions");
+        if (predictions == null || predictions.isEmpty()) {
+            throw new IllegalStateException("Task 1 returned empty or null predictions list");
+        }
         return predictions.get(0).doubleValue();
     }
 
@@ -54,6 +57,11 @@ public class Task1Client {
 
         @SuppressWarnings("unchecked")
         List<Number> predictions = (List<Number>) response.get("predictions");
+        if (predictions == null || predictions.size() != featuresList.size()) {
+            throw new IllegalStateException(
+                    "Task 1 predictions count (" + (predictions == null ? 0 : predictions.size())
+                            + ") does not match request count (" + featuresList.size() + ")");
+        }
         return predictions.stream().map(Number::doubleValue).toList();
     }
 
