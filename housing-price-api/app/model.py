@@ -41,6 +41,7 @@ _MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 _SCALER_PATH = _MODELS_DIR / "scaler.joblib"
 _MODEL_PATH = _MODELS_DIR / "model.joblib"
 _METRICS_PATH = _MODELS_DIR / "metrics.json"
+_FEATURE_STATS_PATH = _MODELS_DIR / "feature_stats.json"
 
 
 # ---------------------------------------------------------------------------
@@ -68,6 +69,13 @@ class HousePricePredictor:
 
         with open(_METRICS_PATH, "r", encoding="utf-8") as f:
             self._metrics: dict = json.load(f)
+
+        try:
+            with open(_FEATURE_STATS_PATH, "r", encoding="utf-8") as f:
+                self._feature_stats: dict = json.load(f)
+        except FileNotFoundError:
+            logger.warning("feature_stats.json 未找到，请重新运行 train.py")
+            self._feature_stats = {}
 
         logger.info(
             "模型加载成功。R²=%.4f, 特征数=%d",
@@ -128,6 +136,7 @@ class HousePricePredictor:
             "coefficients": coefficients,
             "intercept": round(float(self._model.intercept_), 2),
             "metrics": self._metrics,
+            "feature_stats": self._feature_stats,
         }
 
 
