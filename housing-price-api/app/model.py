@@ -22,8 +22,8 @@ from sklearn.preprocessing import StandardScaler
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# 特征列顺序 — 必须与 train.py 严格一致
-# 这是 train.py 和 model.py 之间的数据契约
+# 特征列顺序 — 单一定义源（train.py 和 model.py 共享）
+# 这是训练和推理之间的数据契约，严禁两边分别维护
 # ---------------------------------------------------------------------------
 
 FEATURE_COLUMNS = [
