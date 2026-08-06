@@ -87,8 +87,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # Next.js 开发服务器
-        "http://portal:3000",     # Docker Compose 内部
+        "http://localhost:3000",   # Next.js 开发服务器
+        "http://127.0.0.1:3000",   # Next.js (IP 访问)
+        "http://portal:3000",      # Docker Compose 内部
     ],
     allow_credentials=True,
     allow_methods=["*"],
