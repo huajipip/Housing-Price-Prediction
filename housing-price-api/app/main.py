@@ -6,17 +6,19 @@ main.py — 房价预测 API 的 FastAPI 应用入口。
     GET  /model-info  — 模型系数与性能指标
     GET  /health      — 服务健康检查
 
-模型在应用启动时通过 "startup" 事件处理器一次性加载到内存中。
+模型在应用启动时通过 lifespan 上下文管理器一次性加载到内存中。
 """
 
 import logging
 import time
+from contextlib import asynccontextmanager
 from typing import Union
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.model import HousePricePredictor, predictor as global_predictor
+from app.model import HousePricePredictor
+import app.model as _model
 from app.schemas import (
     HealthResponse,
     HouseFeatures,
@@ -36,11 +38,26 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# 应用生命周期 — 必须在 FastAPI() 之前定义
+# ---------------------------------------------------------------------------
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期：启动时加载模型到 _model.predictor，关闭时清理。"""
+    _model.predictor = HousePricePredictor()
+    logger.info("模型已加载，可以开始预测。")
+    yield
+    logger.info("应用关闭。")
+
+
+# ---------------------------------------------------------------------------
 # FastAPI 应用实例
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="Housing Price Prediction API",
+    lifespan=lifespan,
     description="""
     Predict house prices based on property features using a Linear Regression model.
 
@@ -53,19 +70,6 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
-
-
-# ---------------------------------------------------------------------------
-# 启动事件：将模型加载到内存
-# ---------------------------------------------------------------------------
-
-
-@app.on_event("startup")
-def load_model() -> None:
-    """应用启动时将预训练的模型构件加载到内存中。"""
-    global global_predictor
-    global_predictor = HousePricePredictor()
-    logger.info("模型已加载，可以开始预测。")
 
 
 # ---------------------------------------------------------------------------
@@ -126,13 +130,13 @@ async def model_info() -> ModelInfoResponse:
 
     系数代表每个特征在标准化后对预测价格的贡献权重。指标包括 R²、MSE、MAE 和 RMSE。
     """
-    if global_predictor is None:
+    if _model.predictor is None:
         return JSONResponse(
             status_code=503,
             content={"detail": "模型尚未加载完成，请稍后重试。"},
         )
 
-    info = global_predictor.get_model_info()
+    info = _model.predictor.get_model_info()
     return ModelInfoResponse(**info)
 
 
@@ -167,7 +171,7 @@ async def predict(
     ]
     ```
     """
-    if global_predictor is None:
+    if _model.predictor is None:
         return JSONResponse(
             status_code=503,
             content={"detail": "模型尚未加载完成，请稍后重试。"},
@@ -187,6 +191,6 @@ async def predict(
         )
 
     # 执行预测
-    predictions = global_predictor.predict(records)
+    predictions = _model.predictor.predict(records)
 
     return PredictionResponse(predictions=predictions)
