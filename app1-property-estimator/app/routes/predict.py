@@ -7,6 +7,7 @@ routes/predict.py — 预测相关端点。
 两个端点都是薄代理：校验输入 → 转发 Task 1 → 返回结果。
 """
 
+import json as _json
 import logging
 
 import httpx
@@ -44,7 +45,15 @@ async def single_predict(features: HouseFeatures):
             content={
                 "error": True,
                 "message": "预测服务暂时不可用，请稍后重试。",
-                "detail": str(exc),
+            },
+        )
+    except _json.JSONDecodeError as exc:
+        logger.error("Task 1 返回非 JSON 响应: %s", exc)
+        return JSONResponse(
+            status_code=502,
+            content={
+                "error": True,
+                "message": "预测服务返回格式异常，请稍后重试。",
             },
         )
 
@@ -72,6 +81,14 @@ async def batch_predict(batch: BatchRequest):
             content={
                 "error": True,
                 "message": "预测服务暂时不可用，请稍后重试。",
-                "detail": str(exc),
+            },
+        )
+    except _json.JSONDecodeError as exc:
+        logger.error("Task 1 返回非 JSON 响应: %s", exc)
+        return JSONResponse(
+            status_code=502,
+            content={
+                "error": True,
+                "message": "预测服务返回格式异常，请稍后重试。",
             },
         )
