@@ -21,7 +21,11 @@ export default function ExportPage() {
         setMessage(null);
         try {
             const res = await fetch(app2Api.exportCsvUrl());
-            if (!res.ok) throw new Error("导出失败");
+            if (!res.ok) {
+                // 尝试解析服务端 JSON 错误详情
+                const errBody = await res.json().catch(() => ({}));
+                throw new Error(errBody.message || errBody.detail || `导出失败 (${res.status})`);
+            }
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
