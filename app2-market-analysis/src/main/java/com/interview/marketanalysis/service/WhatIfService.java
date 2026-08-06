@@ -65,6 +65,25 @@ public class WhatIfService {
     }
 
     /**
+     * 从 HouseFeatures 中提取指定特征的实际值（已应用类型转换后的值）。
+     *
+     * <p>对于 integer 特征（bedrooms, year_built），返回强转后的 int 值；
+     * 对于 double 特征，返回原始值。保证 x 轴显示值与传入预测模型的值一致。
+     */
+    private double extractFeatureValue(HouseFeatures features, String feature) {
+        return switch (feature) {
+            case "square_footage"       -> features.squareFootage();
+            case "bedrooms"             -> features.bedrooms();       // int → double, 已是截断值
+            case "bathrooms"            -> features.bathrooms();
+            case "year_built"           -> features.yearBuilt();     // int → double, 已是截断值
+            case "lot_size"             -> features.lotSize();
+            case "distance_to_city_center" -> features.distanceToCityCenter();
+            case "school_rating"        -> features.schoolRating();
+            default -> throw new IllegalArgumentException("Unknown feature: " + feature);
+        };
+    }
+
+    /**
      * 复制基准特征，仅改变指定字段的值。
      */
     private HouseFeatures applyVariation(HouseFeatures base, String feature, double value) {
@@ -83,7 +102,7 @@ public class WhatIfService {
                     base.yearBuilt(), base.lotSize(), value, base.schoolRating());
             case "school_rating" -> new HouseFeatures(base.squareFootage(), base.bedrooms(), base.bathrooms(),
                     base.yearBuilt(), base.lotSize(), base.distanceToCityCenter(), value);
-            default -> base;
+            default -> throw new IllegalArgumentException("Unknown feature: " + feature);
         };
     }
 }
