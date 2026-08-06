@@ -42,7 +42,7 @@ public class DataLoader {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] fields = line.split(",");
-                    if (fields.length < 8) continue;
+                    if (fields.length < 9) continue;  // CSV 共 9 列 (id + 7 特征 + price)
 
                     records.add(new HouseRecord(
                             Double.parseDouble(fields[1].trim()),   // square_footage
