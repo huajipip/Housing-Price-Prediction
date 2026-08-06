@@ -179,6 +179,13 @@ async def predict(
     else:
         records = [item.model_dump() for item in payload]
 
+    # 批量预测上限保护（防止 DoS）
+    if len(records) > 100:
+        return JSONResponse(
+            status_code=422,
+            content={"detail": f"批量预测上限为 100 条，当前 {len(records)} 条。"},
+        )
+
     # 执行预测
     predictions = global_predictor.predict(records)
 
