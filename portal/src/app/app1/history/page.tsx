@@ -15,7 +15,7 @@ import { FIELD_META } from "@/lib/constants";
 import type { HistoryEntry } from "@/lib/types";
 
 export default function HistoryPage() {
-    const { history, removeEntry, clearAll } = usePredictionHistory();
+    const { history, removeEntry, removeBatch, clearAll } = usePredictionHistory();
 
     if (history.length === 0) {
         return (
@@ -69,43 +69,95 @@ export default function HistoryPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {history.map((entry: HistoryEntry) => (
-                            <tr
-                                key={entry.id}
-                                className="border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
-                            >
-                                <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-500">
-                                    {new Date(entry.timestamp).toLocaleString("zh-CN", {
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
+                        {history.map((entry: HistoryEntry, idx: number) => {
+                            const prevEntry = idx > 0 ? history[idx - 1] : null;
+                            const nextEntry = idx < history.length - 1 ? history[idx + 1] : null;
+                            const isBatchStart =
+                                entry.batchId && entry.batchId !== prevEntry?.batchId;
+                            const isBatchEnd =
+                                entry.batchId && entry.batchId !== nextEntry?.batchId;
+                            const isInBatch = !!entry.batchId;
+                            const batchSize =
+                                entry.batchId
+                                    ? history.filter((e) => e.batchId === entry.batchId).length
+                                    : 1;
+
+                            return (
+                                <tr
+                                    key={entry.id}
+                                    className={`border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 ${isInBatch
+                                            ? "border-l-4 border-l-blue-400 bg-blue-50/30 dark:border-l-blue-600 dark:bg-blue-950/10"
+                                            : ""
+                                        } ${isBatchStart
+                                            ? "border-t-2 border-t-blue-300 dark:border-t-blue-700"
+                                            : ""
+                                        } ${isBatchEnd
+                                            ? "border-b-2 border-b-blue-300 dark:border-b-blue-700"
+                                            : ""
+                                        }`}
+                                >
+                                    <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-500">
+                                        {isBatchStart ? (
+                                            <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                                📋 CSV 导入 ({batchSize} 条)
+                                            </span>
+                                        ) : isInBatch ? (
+                                            <span className="pl-4 text-gray-400">
+                                                #{entry.batchIndex}
+                                            </span>
+                                        ) : (
+                                            <span>
+                                                {new Date(entry.timestamp).toLocaleString(
+                                                    "zh-CN",
+                                                    {
+                                                        month: "2-digit",
+                                                        day: "2-digit",
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    }
+                                                )}
+                                            </span>
+                                        )}
+                                    </td>
+                                    {Object.keys(FIELD_META).map((key) => {
+                                        const k = key as keyof typeof FIELD_META;
+                                        return (
+                                            <td
+                                                key={k}
+                                                className="px-3 py-2 text-gray-600 dark:text-gray-400"
+                                            >
+                                                {entry.features[k]}
+                                            </td>
+                                        );
                                     })}
-                                </td>
-                                {Object.keys(FIELD_META).map((key) => {
-                                    const k = key as keyof typeof FIELD_META;
-                                    return (
-                                        <td key={k} className="px-3 py-2 text-gray-600 dark:text-gray-400">
-                                            {entry.features[k]}
-                                        </td>
-                                    );
-                                })}
-                                <td className="px-3 py-2 font-semibold text-green-700 dark:text-green-400">
-                                    $
-                                    {entry.predictedPrice.toLocaleString("en-US", {
-                                        minimumFractionDigits: 2,
-                                    })}
-                                </td>
-                                <td className="px-3 py-2">
-                                    <button
-                                        onClick={() => removeEntry(entry.id)}
-                                        className="text-xs text-red-500 hover:underline"
-                                    >
-                                        删除
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                                    <td className="px-3 py-2 font-semibold text-green-700 dark:text-green-400">
+                                        $
+                                        {entry.predictedPrice.toLocaleString("en-US", {
+                                            minimumFractionDigits: 2,
+                                        })}
+                                    </td>
+                                    <td className="px-3 py-2">
+                                        <button
+                                            onClick={() => removeEntry(entry.id)}
+                                            className="text-xs text-red-500 hover:underline"
+                                        >
+                                            删除
+                                        </button>
+                                        {isBatchStart && entry.batchId && (
+                                            <button
+                                                onClick={() =>
+                                                    removeBatch(entry.batchId!)
+                                                }
+                                                className="ml-2 text-xs text-orange-500 hover:underline"
+                                                title={`删除此批次全部 ${batchSize} 条记录`}
+                                            >
+                                                删除整批
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
