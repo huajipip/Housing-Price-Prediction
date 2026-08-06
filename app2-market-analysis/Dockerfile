@@ -15,7 +15,7 @@ FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /build
 COPY pom.xml .
 # 先下载依赖（利用 Docker 层缓存）
-RUN mvn dependency:go-offline -B -q || true
+RUN mvn dependency:go-offline -B -q
 COPY src/ ./src/
 RUN mvn package -DskipTests -B -q
 
