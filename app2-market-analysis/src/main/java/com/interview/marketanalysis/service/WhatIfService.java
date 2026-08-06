@@ -29,8 +29,16 @@ public class WhatIfService {
      *
      * @param request 包含基准特征 + 变化参数
      * @return 包含数据点列表的响应
+     * @throws IllegalArgumentException 如果 varyMin >= varyMax 或特征名无效
      */
     public WhatIfResponse analyze(WhatIfRequest request) {
+        // 校验：最小值必须小于最大值
+        if (request.varyMin() >= request.varyMax()) {
+            throw new IllegalArgumentException(
+                    "varyMin (" + request.varyMin() + ") must be less than varyMax (" + request.varyMax() + ")");
+        }
+
+        String feature = request.varyFeature();
         int steps = Math.max(request.steps(), 2);
         double stepSize = (request.varyMax() - request.varyMin()) / (steps - 1);
 
