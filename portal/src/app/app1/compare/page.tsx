@@ -25,6 +25,7 @@ import {
 import Papa from "papaparse";
 import { FIELD_META } from "@/lib/constants";
 import { app1Api } from "@/lib/api";
+import { usePredictionHistory } from "@/hooks/usePredictionHistory";
 import type { HouseFeatures } from "@/lib/types";
 
 const MAX_ROWS = 20;
@@ -52,6 +53,7 @@ export default function ComparePage() {
     >(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { addEntries } = usePredictionHistory();
 
     /** 更新某行的某个字段 */
     const updateRow = useCallback(
@@ -118,6 +120,8 @@ export default function ComparePage() {
                     predictedPrice: res.predictions[i] ?? 0,
                 }))
             );
+            // 批量预测结果存入历史记录
+            addEntries(houses, res.predictions);
         } catch (err) {
             setError(err instanceof Error ? err.message : "预测失败");
         } finally {
