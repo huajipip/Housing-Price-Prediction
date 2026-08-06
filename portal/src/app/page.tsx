@@ -5,6 +5,7 @@
  */
 
 import Link from "next/link";
+import ModelInfoCard from "@/components/ModelInfoCard";
 
 export default function HomePage() {
   return (
@@ -96,8 +97,11 @@ export default function HomePage() {
         </Link>
       </div>
 
+      {/* ML 模型信息卡片（客户端组件，按需加载） */}
+      <ModelInfoCard />
+
       {/* 技术栈展示 */}
-      <div className="mt-16 text-center">
+      <div className="mt-10 text-center">
         <p className="text-xs text-gray-400 dark:text-gray-500">
           Next.js App Router · Tailwind CSS · React Server Components · FastAPI · Spring Boot 3.4.4 · Scikit-learn
         </p>
