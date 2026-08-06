@@ -10,15 +10,19 @@ import java.util.List;
  * @param varyMin          变化范围下限
  * @param varyMax          变化范围上限
  * @param steps            采样点数（默认 20）
+ * @param step             特征自然步长（如 bathrooms=0.5, bedrooms=1），
+ *                         用于将采样点对齐到合法值。0 表示不对齐。
  */
 public record WhatIfRequest(
         HouseFeatures baseFeatures,
         String varyFeature,
         double varyMin,
         double varyMax,
-        int steps
+        int steps,
+        double step
 ) {
     public WhatIfRequest {
         if (steps <= 0) steps = 20;
+        if (step < 0) step = 0;
     }
 }
