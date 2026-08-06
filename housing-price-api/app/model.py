@@ -129,8 +129,11 @@ class HousePricePredictor:
                 "metrics": {"r2": 0.99, "mse": ..., "mae": ..., "rmse": ...}
             }
         """
-        # 构建系数映射：特征名 → 权重
-        coefficients = dict(zip(FEATURE_COLUMNS, self._model.coef_.tolist()))
+        # 构建系数映射：特征名 → 权重（保留 2 位小数）
+        coefficients = {
+            k: round(float(v), 2)
+            for k, v in zip(FEATURE_COLUMNS, self._model.coef_.tolist())
+        }
 
         return {
             "coefficients": coefficients,
