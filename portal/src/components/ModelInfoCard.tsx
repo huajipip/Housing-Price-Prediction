@@ -19,16 +19,41 @@ interface ModelInfo {
 export default function ModelInfoCard() {
     const [info, setInfo] = useState<ModelInfo | null>(null);
     const [error, setError] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         app1Api
             .getModelInfo()
             .then((data) => setInfo(data as unknown as ModelInfo))
-            .catch(() => setError(true));
+            .catch(() => setError(true))
+            .finally(() => setLoading(false));
     }, []);
 
-    // 加载失败或未加载时渲染空白（不影响首页核心功能）
-    if (error || !info) return null;
+    // 加载中：显示骨架屏
+    if (loading) {
+        return (
+            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <div className="mb-4 h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                <div className="grid grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                            <div className="mx-auto mb-1 h-3 w-10 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                            <div className="mx-auto h-5 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // 加载失败：显示错误提示
+    if (error || !info) {
+        return (
+            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 shadow-sm dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+                模型信息暂时无法加载，请确认 Task 1 服务运行正常。
+            </div>
+        );
+    }
 
     // 特征名中文化映射
     const featureNames: Record<string, string> = {
@@ -78,7 +103,16 @@ export default function ModelInfoCard() {
                                         className={`h-3 rounded-full ${val >= 0 ? "bg-green-500" : "bg-red-500"
                                             }`}
                                         style={{
-                                            width: `${Math.min(Math.abs(val) / 50000 * 100, 100)}%`,
+                                            width: `${Math.min(
+                                                Math.abs(val) /
+                                                Math.max(
+                                                    ...Object.values(info.coefficients).map(
+                                                        (v) => Math.abs(v)
+                                                    )
+                                                ) *
+                                                100,
+                                                100
+                                            )}%`,
                                         }}
                                     />
                                 </div>
