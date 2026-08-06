@@ -206,6 +206,8 @@ export default function ComparePage() {
                                         <input
                                             type="number"
                                             step={f.step}
+                                            min={f.min}
+                                            max={f.max}
                                             value={row[f.key] || ""}
                                             onChange={(e) => updateRow(row.id, f.key, e.target.value)}
                                             className="w-24 rounded border border-gray-200 px-2 py-1 text-xs dark:border-gray-700 dark:bg-gray-800"
