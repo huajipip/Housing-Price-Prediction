@@ -39,7 +39,7 @@
     <artifactId>market-analysis</artifactId>
     <version>1.0.0</version>
     <name>App2 - Property Market Analysis</name>
-    <description>房产市场分析后端服务（Java 21 + Spring Boot 3.3.5）</description>
+    <description>房产市场分析后端服务（Java 21 + Spring Boot 3.4.4）</description>
 
     <properties>
         <!-- 本地开发使用 JDK 17，Docker 运行时使用 JDK 21 -->
