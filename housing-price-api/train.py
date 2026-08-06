@@ -126,8 +126,13 @@ def train_model(
     return scaler, model, metrics
 
 
-def save_artifacts(scaler: StandardScaler, model: LinearRegression, metrics: dict) -> None:
-    """将标准化器、模型和指标保存到 models/ 目录。"""
+def save_artifacts(
+    scaler: StandardScaler,
+    model: LinearRegression,
+    metrics: dict,
+    feature_stats: dict,
+) -> None:
+    """将标准化器、模型、指标和特征统计保存到 models/ 目录。"""
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     # 保存标准化器
@@ -145,6 +150,12 @@ def save_artifacts(scaler: StandardScaler, model: LinearRegression, metrics: dic
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     logger.info("已保存指标     → %s", metrics_path)
+
+    # 保存训练数据特征统计（min/max/mean），供前端 what-if 动态设置滑块范围
+    stats_path = MODELS_DIR / "feature_stats.json"
+    with open(stats_path, "w", encoding="utf-8") as f:
+        json.dump(feature_stats, f, indent=2)
+    logger.info("已保存特征统计 → %s", stats_path)
 
 
 def main() -> None:
@@ -165,8 +176,18 @@ def main() -> None:
     # 3. 训练（使用全量数据集；生产环境建议使用交叉验证）
     scaler, model, metrics = train_model(X, y)
 
+    # 3.5 计算训练数据特征统计（min/max/mean），供前端 what-if 动态设置滑块范围
+    feature_stats = {}
+    for col in FEATURE_COLUMNS:
+        feature_stats[col] = {
+            "min": float(X[col].min()),
+            "max": float(X[col].max()),
+            "mean": float(X[col].mean()),
+        }
+    logger.info("特征统计：%s", json.dumps(feature_stats, indent=2))
+
     # 4. 保存构件供 FastAPI 服务加载使用
-    save_artifacts(scaler, model, metrics)
+    save_artifacts(scaler, model, metrics, feature_stats)
 
     # 5. 打印系数以供检查
     logger.info("=" * 60)
