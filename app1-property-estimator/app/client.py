@@ -63,7 +63,10 @@ async def predict_single(features: dict) -> float:
     response = await client.post("/predict", json=features)
     response.raise_for_status()
     data = response.json()
-    return data["predictions"][0]
+    predictions = data.get("predictions", [])
+    if not predictions:
+        raise ValueError("Task 1 returned empty predictions list")
+    return predictions[0]
 
 
 async def predict_batch(features_list: list[dict]) -> list[float]:
@@ -83,7 +86,13 @@ async def predict_batch(features_list: list[dict]) -> list[float]:
     response = await client.post("/predict", json=features_list)
     response.raise_for_status()
     data = response.json()
-    return data["predictions"]
+    predictions = data.get("predictions", [])
+    if len(predictions) != len(features_list):
+        logger.warning(
+            "Task 1 返回 %d 条预测，但请求了 %d 条",
+            len(predictions), len(features_list),
+        )
+    return predictions
 
 
 async def get_model_info() -> dict:
