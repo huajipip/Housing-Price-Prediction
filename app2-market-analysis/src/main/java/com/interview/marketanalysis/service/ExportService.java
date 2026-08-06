@@ -45,7 +45,7 @@ public class ExportService {
         StringBuilder sb = new StringBuilder(csvHeader()).append("\n");
         for (int i = 0; i < records.size(); i++) {
             HouseRecord r = records.get(i);
-            sb.append(String.format("%.0f,%d,%.1f,%d,%.0f,%.1f,%.1f,%.0f,%.2f\n",
+            sb.append(String.format("%.2f,%d,%.1f,%d,%.2f,%.1f,%.1f,%.2f,%.2f\n",
                     r.squareFootage(), r.bedrooms(), r.bathrooms(),
                     r.yearBuilt(), r.lotSize(),
                     r.distanceToCityCenter(), r.schoolRating(),
