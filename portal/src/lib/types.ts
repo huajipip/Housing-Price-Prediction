@@ -99,4 +99,8 @@ export interface HistoryEntry {
     timestamp: number;
     features: HouseFeatures;
     predictedPrice: number;
+    /** 批量导入时共享的批次 ID（单条预测时为 undefined） */
+    batchId?: string;
+    /** 在批次中的序号（1-based），单条预测时为 undefined */
+    batchIndex?: number;
 }
