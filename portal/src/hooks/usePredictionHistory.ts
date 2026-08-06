@@ -50,11 +50,45 @@ export function usePredictionHistory() {
         [persist]
     );
 
+    /** 批量添加记录（CSV 导入等场景，共享 batchId） */
+    const addEntries = useCallback(
+        (featuresList: HouseFeatures[], prices: number[]) => {
+            const batchId = crypto.randomUUID();
+            const timestamp = Date.now();
+            const entries: HistoryEntry[] = featuresList.map((features, i) => ({
+                id: crypto.randomUUID(),
+                timestamp,
+                features,
+                predictedPrice: prices[i],
+                batchId,
+                batchIndex: i + 1,
+            }));
+            setHistory((prev) => {
+                const next = [...entries, ...prev];
+                persist(next);
+                return next;
+            });
+        },
+        [persist]
+    );
+
     /** 删除单条记录 */
     const removeEntry = useCallback(
         (id: string) => {
             setHistory((prev) => {
                 const next = prev.filter((e) => e.id !== id);
+                persist(next);
+                return next;
+            });
+        },
+        [persist]
+    );
+
+    /** 删除整个批次 */
+    const removeBatch = useCallback(
+        (batchId: string) => {
+            setHistory((prev) => {
+                const next = prev.filter((e) => e.batchId !== batchId);
                 persist(next);
                 return next;
             });
@@ -68,5 +102,5 @@ export function usePredictionHistory() {
         localStorage.removeItem(HISTORY_STORAGE_KEY);
     }, []);
 
-    return { history, addEntry, removeEntry, clearAll };
+    return { history, addEntry, addEntries, removeEntry, removeBatch, clearAll };
 }
