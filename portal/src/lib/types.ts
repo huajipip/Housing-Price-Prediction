@@ -49,6 +49,13 @@ export interface StatsResponse {
     meanLotSize: number;
     meanDistanceToCityCenter: number;
     meanSchoolRating: number;
+    medianSquareFootage: number;
+    medianBedrooms: number;
+    medianBathrooms: number;
+    medianYearBuilt: number;
+    medianLotSize: number;
+    medianDistanceToCityCenter: number;
+    medianSchoolRating: number;
 }
 
 /** 价格分布响应 (App2) */
@@ -60,6 +67,12 @@ export interface DistributionResponse {
 /** 特征相关性响应 (App2) */
 export interface CorrelationResponse {
     correlations: Record<string, number>;
+}
+
+/** 散点图数据点 (App2) */
+export interface ScatterResponse {
+    feature: string;
+    points: { x: number; y: number }[];
 }
 
 /** 训练数据特征统计（min/max/mean），由 /model-info 返回 */

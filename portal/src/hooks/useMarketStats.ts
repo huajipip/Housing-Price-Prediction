@@ -13,6 +13,7 @@ import type {
     StatsResponse,
     DistributionResponse,
     CorrelationResponse,
+    ScatterResponse,
 } from "@/lib/types";
 
 export function useMarketStats(params?: Record<string, string>) {
@@ -42,5 +43,11 @@ export function useDistribution(params?: Record<string, string>) {
 export function useCorrelation() {
     return useSWR<CorrelationResponse>("correlation", () =>
         app2Api.getCorrelation()
+    );
+}
+
+export function useScatter(feature: string) {
+    return useSWR<ScatterResponse>(`scatter-${feature}`, () =>
+        app2Api.getScatter(feature)
     );
 }

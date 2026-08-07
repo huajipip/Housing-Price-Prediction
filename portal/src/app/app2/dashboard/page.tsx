@@ -28,7 +28,7 @@ import {
 import {
     useMarketStats,
     useDistribution,
-    useCorrelation,
+    useScatter,
 } from "@/hooks/useMarketStats";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ErrorDisplay from "@/components/ErrorDisplay";
@@ -60,6 +60,19 @@ function FilterBar({
                 </select>
             </div>
             <div>
+                <label className="mb-1 block text-xs text-gray-500">最多卧室数</label>
+                <select
+                    value={filters.maxBedrooms || ""}
+                    onChange={(e) => onFilterChange("maxBedrooms", e.target.value)}
+                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                >
+                    <option value="">不限</option>
+                    {[2, 3, 4, 5].map((v) => (
+                        <option key={v} value={v}>{v} 间</option>
+                    ))}
+                </select>
+            </div>
+            <div>
                 <label className="mb-1 block text-xs text-gray-500">最早建造年</label>
                 <select
                     value={filters.minYearBuilt || ""}
@@ -73,6 +86,19 @@ function FilterBar({
                 </select>
             </div>
             <div>
+                <label className="mb-1 block text-xs text-gray-500">最晚建造年</label>
+                <select
+                    value={filters.maxYearBuilt || ""}
+                    onChange={(e) => onFilterChange("maxYearBuilt", e.target.value)}
+                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                >
+                    <option value="">不限</option>
+                    {[1990, 2000, 2010, 2020].map((v) => (
+                        <option key={v} value={v}>{v}</option>
+                    ))}
+                </select>
+            </div>
+            <div>
                 <label className="mb-1 block text-xs text-gray-500">最低学校评分</label>
                 <select
                     value={filters.minSchoolRating || ""}
@@ -81,6 +107,19 @@ function FilterBar({
                 >
                     <option value="">不限</option>
                     {[6, 7, 8, 9].map((v) => (
+                        <option key={v} value={v}>{v} 分</option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <label className="mb-1 block text-xs text-gray-500">最高学校评分</label>
+                <select
+                    value={filters.maxSchoolRating || ""}
+                    onChange={(e) => onFilterChange("maxSchoolRating", e.target.value)}
+                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                >
+                    <option value="">不限</option>
+                    {[7, 8, 9, 10].map((v) => (
                         <option key={v} value={v}>{v} 分</option>
                     ))}
                 </select>
@@ -127,11 +166,14 @@ export default function DashboardPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    // 从 URL 读取筛选参数
+    // 从 URL 读取筛选参数（min/max 全部支持）
     const [filters, setFilters] = useState<Record<string, string>>({
         minBedrooms: searchParams.get("minBedrooms") || "",
+        maxBedrooms: searchParams.get("maxBedrooms") || "",
         minYearBuilt: searchParams.get("minYearBuilt") || "",
+        maxYearBuilt: searchParams.get("maxYearBuilt") || "",
         minSchoolRating: searchParams.get("minSchoolRating") || "",
+        maxSchoolRating: searchParams.get("maxSchoolRating") || "",
     });
 
     const updateFilter = (key: string, value: string) => {
@@ -158,7 +200,9 @@ export default function DashboardPage() {
         isLoading: statsLoading,
     } = useMarketStats(filterParams);
     const { data: distribution } = useDistribution(filterParams);
-    const { data: correlation } = useCorrelation();
+    // 散点图数据：需求要求 square_footage 与 distance_to_city_center 两个维度
+    const { data: scatterSqft } = useScatter("square_footage");
+    const { data: scatterDistance } = useScatter("distance_to_city_center");
 
     if (statsLoading) return <LoadingSkeleton rows={8} />;
     if (statsError)
@@ -192,12 +236,12 @@ export default function DashboardPage() {
                 <FilterBar filters={filters} onFilterChange={updateFilter} />
             </div>
 
-            {/* 统计卡片 */}
+            {/* 统计卡片 — 需求要求 4 张：平均 / 中位数 / 总条数 / 最高最低 */}
             <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label="平均房价" value={stats.meanPrice} />
                 <StatCard label="中位数房价" value={stats.medianPrice} />
+                <StatCard label="数据集总条数" value={stats.totalRecords} format="number" />
                 <StatCard label="最低 / 最高" value={`$${stats.minPrice.toLocaleString("en-US")} - $${stats.maxPrice.toLocaleString("en-US")}`} format="text" />
-                <StatCard label="标准差" value={stats.stdDevPrice} format="money" />
             </div>
 
             {/* 图表区 */}
@@ -226,29 +270,78 @@ export default function DashboardPage() {
                 )}
 
                 {/* 相关性散点图：sqft vs price */}
-                {correlation && (
+                {scatterSqft && (
                     <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
                         <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                            特征相关性 (Pearson)
+                            居住面积 vs 房价 (散点)
                         </h3>
-                        <div className="space-y-2">
-                            {Object.entries(correlation.correlations).map(([key, val]) => (
-                                <div key={key} className="flex items-center gap-2">
-                                    <span className="w-40 text-xs text-gray-600 dark:text-gray-400">
-                                        {key.replace(/_/g, " ")}
-                                    </span>
-                                    <div className="h-4 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
-                                        <div
-                                            className="h-4 rounded-full bg-blue-500"
-                                            style={{ width: `${Math.abs(val) * 100}%` }}
-                                        />
-                                    </div>
-                                    <span className="w-12 text-right text-xs font-medium text-gray-700 dark:text-gray-300">
-                                        {val.toFixed(3)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    type="number"
+                                    dataKey="x"
+                                    name="square_footage"
+                                    label={{ value: "sq ft", position: "insideBottom", offset: -5, fontSize: 11 }}
+                                    tick={{ fontSize: 11 }}
+                                />
+                                <YAxis
+                                    type="number"
+                                    dataKey="y"
+                                    name="price"
+                                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                                    tick={{ fontSize: 11 }}
+                                />
+                                <ZAxis range={[60, 60]} />
+                                <Tooltip
+                                    formatter={(value, name) => {
+                                        const num = typeof value === "number" ? value : Number(value);
+                                        return name === "price"
+                                            ? [`$${num.toLocaleString()}`, name]
+                                            : [num, name];
+                                    }}
+                                />
+                                <Scatter data={scatterSqft.points} fill="#3b82f6" />
+                            </ScatterChart>
+                        </ResponsiveContainer>
+                    </div>
+                )}
+
+                {/* 相关性散点图：distance vs price */}
+                {scatterDistance && (
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            距市中心距离 vs 房价 (散点)
+                        </h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    type="number"
+                                    dataKey="x"
+                                    name="distance"
+                                    label={{ value: "miles", position: "insideBottom", offset: -5, fontSize: 11 }}
+                                    tick={{ fontSize: 11 }}
+                                />
+                                <YAxis
+                                    type="number"
+                                    dataKey="y"
+                                    name="price"
+                                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                                    tick={{ fontSize: 11 }}
+                                />
+                                <ZAxis range={[60, 60]} />
+                                <Tooltip
+                                    formatter={(value, name) => {
+                                        const num = typeof value === "number" ? value : Number(value);
+                                        return name === "price"
+                                            ? [`$${num.toLocaleString()}`, name]
+                                            : [num, name];
+                                    }}
+                                />
+                                <Scatter data={scatterDistance.points} fill="#f59e0b" />
+                            </ScatterChart>
+                        </ResponsiveContainer>
                     </div>
                 )}
             </div>
@@ -274,6 +367,10 @@ export default function DashboardPage() {
                     <div>
                         <span className="text-gray-500">平均学校评分:</span>{" "}
                         <span className="font-semibold">{stats.meanSchoolRating.toFixed(1)}</span>
+                    </div>
+                    <div>
+                        <span className="text-gray-500">价格标准差:</span>{" "}
+                        <span className="font-semibold">${stats.stdDevPrice.toLocaleString("en-US")}</span>
                     </div>
                 </div>
             </div>

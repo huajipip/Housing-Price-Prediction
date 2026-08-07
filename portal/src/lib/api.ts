@@ -13,6 +13,7 @@ import type {
     HealthResponse,
     HouseFeatures,
     PredictionResponse,
+    ScatterResponse,
     StatsResponse,
     WhatIfRequest,
     WhatIfResponse,
@@ -91,6 +92,12 @@ export const app2Api = {
     getCorrelation: () =>
         request<CorrelationResponse>(
             `${APP2_BASE_URL}/api/app2/stats/correlation`
+        ),
+
+    /** 散点图数据（特征 vs price） */
+    getScatter: (feature: string) =>
+        request<ScatterResponse>(
+            `${APP2_BASE_URL}/api/app2/stats/scatter?feature=${encodeURIComponent(feature)}`
         ),
 
     /** 单条预测（通过 App2 代理） */
