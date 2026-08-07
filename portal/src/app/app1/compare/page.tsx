@@ -121,6 +121,29 @@ export default function ComparePage() {
 
     /** 提交批量预测 */
     const handlePredict = async () => {
+        // 客户端校验：给出友好提示，避免直接抛 422 原始错误
+        if (rows.length === 0) {
+            setError("请先添加至少一行房源数据，再进行批量预测。");
+            return;
+        }
+        // 检查是否有未填写的必填字段（空模板用 0 表示未填）
+        const incompleteRows: number[] = [];
+        rows.forEach((r, idx) => {
+            if (
+                !r.square_footage || !r.bedrooms || !r.bathrooms ||
+                !r.year_built || !r.lot_size
+            ) {
+                incompleteRows.push(idx + 1);
+            }
+        });
+        if (incompleteRows.length > 0) {
+            setError(
+                `第 ${incompleteRows.join("、")} 行房源信息不完整，请填写全部特征` +
+                `（居住面积、卧室、浴室、建造年份、地块面积等）后再试。`
+            );
+            return;
+        }
+
         const houses = rows.map(({ id, ...rest }) => rest);
         setIsLoading(true);
         setError(null);
@@ -179,7 +202,7 @@ export default function ComparePage() {
                 <button
                     onClick={handlePredict}
                     disabled={isLoading}
-                    className="rounded-lg bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="rounded-[12px] bg-kraken px-4 py-1.5 text-sm font-medium text-white hover:bg-kraken-deep disabled:opacity-50"
                 >
                     {isLoading ? "预测中..." : "批量预测"}
                 </button>
@@ -246,26 +269,32 @@ export default function ComparePage() {
                                     </td>
                                 )}
                                 <td className="px-3 py-2">
-                                    <div className="flex items-center gap-1">
+                                    <div className="flex items-center gap-1.5">
                                         <button
                                             onClick={() => moveRow(row.id, -1)}
                                             disabled={i === 0}
                                             title="上移"
-                                            className="text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30 dark:hover:text-gray-200"
+                                            aria-label="上移"
+                                            className="rounded-md border border-gray-200 px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-silver dark:hover:text-kraken"
                                         >
-                                            ↑
+                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                            </svg>
                                         </button>
                                         <button
                                             onClick={() => moveRow(row.id, 1)}
                                             disabled={i === rows.length - 1}
                                             title="下移"
-                                            className="text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30 dark:hover:text-gray-200"
+                                            aria-label="下移"
+                                            className="rounded-md border border-gray-200 px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-silver dark:hover:text-kraken"
                                         >
-                                            ↓
+                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
                                         </button>
                                         <button
                                             onClick={() => removeRow(row.id)}
-                                            className="ml-1 text-xs text-red-500 hover:underline"
+                                            className="ml-1 rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
                                         >
                                             删除
                                         </button>
@@ -321,7 +350,7 @@ export default function ComparePage() {
                                                 ? "#22c55e"
                                                 : r.predictedPrice === minPrice
                                                     ? "#ef4444"
-                                                    : "#3b82f6"
+                                                    : "#7132f5"
                                         }
                                     />
                                 ))}

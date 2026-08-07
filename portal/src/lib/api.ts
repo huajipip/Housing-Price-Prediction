@@ -35,7 +35,22 @@ async function request<T>(
     if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         const err = body as ErrorResponse;
-        throw new Error(err.message || `请求失败 (${res.status})`);
+
+        // 后端返回统一错误结构：{ error, message, detail }
+        if (err.message) throw new Error(err.message);
+
+        // FastAPI 422 校验错误：body 是 { detail: [...] }，无 message
+        // 转换为用户可读的友好提示
+        if (res.status === 422) {
+            throw new Error(
+                "输入数据校验失败，请检查所有字段的格式和取值范围。" +
+                (Array.isArray((body as { detail?: unknown }).detail)
+                    ? "（如：卧室数应为整数、浴室数最小 0.5、学校评分 0-10）"
+                    : "")
+            );
+        }
+
+        throw new Error(`请求失败 (${res.status})`);
     }
 
     return res.json();
