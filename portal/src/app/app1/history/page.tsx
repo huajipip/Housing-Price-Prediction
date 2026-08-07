@@ -95,19 +95,19 @@ export default function HistoryPage() {
                                 <tr
                                     key={entry.id}
                                     className={`border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 ${isInBatch
-                                        ? "border-l-4 border-l-blue-400 bg-blue-50/30 dark:border-l-blue-600 dark:bg-blue-950/10"
+                                        ? "border-l-4 border-l-kraken bg-kraken-soft/20 dark:border-l-kraken dark:bg-kraken-soft/10"
                                         : ""
                                         } ${isBatchStart
-                                            ? "border-t-2 border-t-blue-300 dark:border-t-blue-700"
+                                            ? "border-t-2 border-t-kraken/60 dark:border-t-kraken"
                                             : ""
                                         } ${isBatchEnd
-                                            ? "border-b-2 border-b-blue-300 dark:border-b-blue-700"
+                                            ? "border-b-2 border-b-kraken/60 dark:border-b-kraken"
                                             : ""
                                         }`}
                                 >
                                     <td className="whitespace-nowrap px-3 py-2 text-xs text-gray-500">
                                         {isBatchStart ? (
-                                            <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                            <span className="inline-flex items-center gap-1 rounded bg-kraken-soft px-1.5 py-0.5 text-xs font-medium text-kraken-deep dark:text-kraken">
                                                 📋 CSV 导入 ({batchSize} 条)
                                             </span>
                                         ) : isInBatch ? (
@@ -149,7 +149,7 @@ export default function HistoryPage() {
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => refillToEstimate(entry.features)}
-                                                className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                                className="text-xs text-kraken hover:underline dark:text-kraken"
                                                 title="回填到估值预测表单"
                                             >
                                                 回填

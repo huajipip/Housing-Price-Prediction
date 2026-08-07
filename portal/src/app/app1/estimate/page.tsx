@@ -169,7 +169,7 @@ export default function EstimatePage() {
                                 {...register(field.key)}
                                 className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 dark:bg-gray-800 ${errors[field.key]
                                     ? "border-red-300 focus:ring-red-500 dark:border-red-700"
-                                    : "border-gray-300 focus:ring-blue-500 dark:border-gray-600"
+                                    : "border-gray-300 focus:ring-kraken dark:border-gray-600"
                                     }`}
                             />
                             {errors[field.key] && (
@@ -186,7 +186,7 @@ export default function EstimatePage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-[12px] bg-kraken px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-kraken-deep disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {isLoading ? (
                             <span className="flex items-center gap-2">
