@@ -2,6 +2,7 @@ package com.interview.marketanalysis.controller;
 
 import com.interview.marketanalysis.dto.CorrelationResponse;
 import com.interview.marketanalysis.dto.DistributionResponse;
+import com.interview.marketanalysis.dto.ScatterResponse;
 import com.interview.marketanalysis.dto.StatsResponse;
 import com.interview.marketanalysis.service.MarketAnalysisService;
 import org.springframework.web.bind.annotation.*;
@@ -64,5 +65,17 @@ public class StatsController {
     @GetMapping("/stats/correlation")
     public CorrelationResponse getCorrelation() {
         return marketAnalysisService.getCorrelations();
+    }
+
+    /**
+     * 指定特征与价格的原始数据点（散点图）。
+     *
+     * @param feature 特征名：square_footage / bedrooms / bathrooms /
+     *                year_built / lot_size / distance_to_city_center / school_rating
+     */
+    @GetMapping("/stats/scatter")
+    public ScatterResponse getScatter(
+            @RequestParam String feature) {
+        return marketAnalysisService.getScatter(feature);
     }
 }

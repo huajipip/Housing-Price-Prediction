@@ -2,6 +2,7 @@ package com.interview.marketanalysis.service;
 
 import com.interview.marketanalysis.dto.CorrelationResponse;
 import com.interview.marketanalysis.dto.DistributionResponse;
+import com.interview.marketanalysis.dto.ScatterResponse;
 import com.interview.marketanalysis.dto.StatsResponse;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -71,8 +72,27 @@ public class MarketAnalysisService {
                 filtered.stream().mapToDouble(HouseRecord::yearBuilt).average().orElse(0),
                 filtered.stream().mapToDouble(HouseRecord::lotSize).average().orElse(0),
                 filtered.stream().mapToDouble(HouseRecord::distanceToCityCenter).average().orElse(0),
-                filtered.stream().mapToDouble(HouseRecord::schoolRating).average().orElse(0)
+                filtered.stream().mapToDouble(HouseRecord::schoolRating).average().orElse(0),
+                featureMedian(filtered, HouseRecord::squareFootage),
+                featureMedian(filtered, HouseRecord::bedrooms),
+                featureMedian(filtered, HouseRecord::bathrooms),
+                featureMedian(filtered, HouseRecord::yearBuilt),
+                featureMedian(filtered, HouseRecord::lotSize),
+                featureMedian(filtered, HouseRecord::distanceToCityCenter),
+                featureMedian(filtered, HouseRecord::schoolRating)
         );
+    }
+
+    /**
+     * 计算某特征在过滤后数据集上的中位数。
+     *
+     * @param records 过滤后的数据
+     * @param extractor 特征取值函数
+     */
+    private double featureMedian(List<HouseRecord> records,
+                                 java.util.function.ToDoubleFunction<HouseRecord> extractor) {
+        double[] values = records.stream().mapToDouble(extractor).sorted().toArray();
+        return median(values);
     }
 
     // ===================================================================
@@ -151,6 +171,38 @@ public class MarketAnalysisService {
     }
 
     // ===================================================================
+    // 散点图数据（特征 vs price 的原始数据点）
+    // ===================================================================
+
+    /**
+     * 返回指定特征与价格的真实数据点，供前端 ScatterChart 渲染。
+     *
+     * @param feature 特征名（如 square_footage / distance_to_city_center）
+     * @return 过滤后的 (特征值, 价格) 数据点列表
+     */
+    public ScatterResponse getScatter(String feature) {
+        List<HouseRecord> records = dataLoader.getRecords();
+        List<ScatterResponse.Point> points = new ArrayList<>();
+
+        for (HouseRecord r : records) {
+            double x = switch (feature) {
+                case "square_footage" -> r.squareFootage();
+                case "bedrooms" -> r.bedrooms();
+                case "bathrooms" -> r.bathrooms();
+                case "year_built" -> r.yearBuilt();
+                case "lot_size" -> r.lotSize();
+                case "distance_to_city_center" -> r.distanceToCityCenter();
+                case "school_rating" -> r.schoolRating();
+                default -> throw new IllegalArgumentException(
+                        "未知特征: " + feature);
+            };
+            points.add(new ScatterResponse.Point(x, r.price()));
+        }
+
+        return new ScatterResponse(feature, points);
+    }
+
+    // ===================================================================
     // 辅助方法
     // ===================================================================
 
@@ -204,6 +256,9 @@ public class MarketAnalysisService {
     }
 
     private StatsResponse emptyStats() {
-        return new StatsResponse(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        return new StatsResponse(
+                0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0);
     }
 }

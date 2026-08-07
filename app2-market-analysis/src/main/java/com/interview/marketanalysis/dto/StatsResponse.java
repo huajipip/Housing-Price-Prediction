@@ -19,5 +19,13 @@ public record StatsResponse(
         double meanYearBuilt,
         double meanLotSize,
         double meanDistanceToCityCenter,
-        double meanSchoolRating
+        double meanSchoolRating,
+        // 各特征的中位数（用于 What-If 的"恢复默认"）
+        double medianSquareFootage,
+        double medianBedrooms,
+        double medianBathrooms,
+        double medianYearBuilt,
+        double medianLotSize,
+        double medianDistanceToCityCenter,
+        double medianSchoolRating
 ) {}
