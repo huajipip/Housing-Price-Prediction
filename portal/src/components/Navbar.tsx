@@ -52,9 +52,10 @@ export default function Navbar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${isActive(item.href)
-                                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
                                     }`}
                                 title={item.description}
                             >
@@ -88,9 +89,10 @@ export default function Navbar() {
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setMobileOpen(false)}
+                                aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`block rounded-lg px-4 py-3 text-sm font-medium ${isActive(item.href)
-                                        ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                                        : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                                     }`}
                             >
                                 <div>{item.label}</div>
