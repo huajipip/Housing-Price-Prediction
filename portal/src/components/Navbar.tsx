@@ -38,9 +38,9 @@ export default function Navbar() {
                     {/* Logo + 首页链接 */}
                     <Link
                         href="/"
-                        className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white"
+                        className="flex items-center gap-2 text-lg font-bold text-ink dark:text-white"
                     >
-                        <span className="rounded-lg bg-blue-600 px-2 py-1 text-sm text-white">
+                        <span className="rounded-lg bg-kraken px-2 py-1 text-sm text-white">
                             HP
                         </span>
                         Housing Portal
@@ -54,8 +54,8 @@ export default function Navbar() {
                                 href={item.href}
                                 aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${isActive(item.href)
-                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                                    ? "bg-kraken-soft text-kraken-deep dark:text-kraken"
+                                    : "text-coolgray hover:bg-gray-100 hover:text-ink dark:text-silver dark:hover:bg-gray-800 dark:hover:text-white"
                                     }`}
                                 title={item.description}
                             >
@@ -91,7 +91,7 @@ export default function Navbar() {
                                 onClick={() => setMobileOpen(false)}
                                 aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`block rounded-lg px-4 py-3 text-sm font-medium ${isActive(item.href)
-                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                    ? "bg-kraken-soft text-kraken-deep dark:text-kraken"
                                     : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
                                     }`}
                             >
