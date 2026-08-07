@@ -107,8 +107,11 @@ export const app2Api = {
             body: JSON.stringify(req),
         }),
 
-    /** CSV 导出下载 */
-    exportCsvUrl: () => `${APP2_BASE_URL}/api/app2/export/csv`,
+    /** CSV 导出下载（支持可选筛选参数，不传 = 全量导出） */
+    exportCsvUrl: (params?: Record<string, string>) => {
+        const qs = params ? "?" + new URLSearchParams(params).toString() : "";
+        return `${APP2_BASE_URL}/api/app2/export/csv${qs}`;
+    },
 
     /** 健康检查 */
     health: () =>
