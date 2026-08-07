@@ -24,6 +24,7 @@ import {
 } from "recharts";
 import { FIELD_META, DEFAULT_FEATURES } from "@/lib/constants";
 import { app1Api, app2Api } from "@/lib/api";
+import { useMarketStats } from "@/hooks/useMarketStats";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { HouseFeatures, FeatureStats, WhatIfResponse } from "@/lib/types";
 
@@ -40,6 +41,9 @@ export default function WhatIfPage() {
     // 训练数据特征统计（从 /model-info 动态获取）
     const [featureStats, setFeatureStats] =
         useState<Record<string, FeatureStats> | null>(null);
+
+    // 数据集聚合统计（含各特征中位数，供"恢复默认"使用）
+    const { data: marketStats } = useMarketStats();
 
     // 页面加载时获取模型信息（含训练数据范围）
     useEffect(() => {
@@ -136,9 +140,21 @@ export default function WhatIfPage() {
     /** 清除所有曲线 */
     const clearCurves = () => setCurves([]);
 
-    /** 恢复默认值 */
+    /** 恢复默认值 — 需求要求重置为数据集中位数 */
     const resetDefaults = () => {
-        setBaseFeatures(DEFAULT_FEATURES);
+        setBaseFeatures(
+            marketStats
+                ? {
+                    square_footage: marketStats.medianSquareFootage,
+                    bedrooms: marketStats.medianBedrooms,
+                    bathrooms: marketStats.medianBathrooms,
+                    year_built: marketStats.medianYearBuilt,
+                    lot_size: marketStats.medianLotSize,
+                    distance_to_city_center: marketStats.medianDistanceToCityCenter,
+                    school_rating: marketStats.medianSchoolRating,
+                }
+                : DEFAULT_FEATURES // stats 未加载时的兜底（均值）
+        );
         setVaryFeature("square_footage");
         const sfStats = featureStats?.square_footage;
         const sf = FIELD_META.square_footage;
