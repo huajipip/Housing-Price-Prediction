@@ -41,3 +41,5 @@ out/
 .env
 .env.local
 .env.*.local
+/ISSUES.md
+/REQUIREMENTS-AUDIT.md
