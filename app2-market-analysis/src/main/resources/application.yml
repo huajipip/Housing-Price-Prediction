@@ -28,7 +28,8 @@ management:
         include: health,info
   endpoint:
     health:
-      show-details: always
+      # 生产建议 when-authorized；本地演示用 always 便于调试
+      show-details: when-authorized
 
 # 日志
 logging:

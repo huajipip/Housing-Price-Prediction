@@ -33,12 +33,4 @@ public class AppConfig {
                 .requestFactory(factory)
                 .build();
     }
-
-    /**
-     * 用于非 Task 1 调用的通用 RestClient。
-     */
-    @Bean
-    public RestClient restClient() {
-        return RestClient.create();
-    }
 }
