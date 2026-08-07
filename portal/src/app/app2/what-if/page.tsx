@@ -28,7 +28,7 @@ import { useMarketStats } from "@/hooks/useMarketStats";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { HouseFeatures, FeatureStats, WhatIfResponse } from "@/lib/types";
 
-const COLORS = ["#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6"];
+const COLORS = ["#7132f5", "#5741d8", "#22c55e", "#f59e0b", "#5b1ecf"];
 
 export default function WhatIfPage() {
     // 基准特征
@@ -299,7 +299,7 @@ export default function WhatIfPage() {
                     <button
                         onClick={() => runAnalysis(debouncedMin, debouncedMax)}
                         disabled={isLoading}
-                        className="rounded-lg bg-amber-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                        className="rounded-[12px] bg-kraken px-4 py-1.5 text-sm font-medium text-white hover:bg-kraken-deep disabled:opacity-50"
                     >
                         {isLoading ? "分析中..." : "运行分析"}
                     </button>

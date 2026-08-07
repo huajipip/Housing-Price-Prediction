@@ -137,8 +137,8 @@ export default function ExportPage() {
                 <div className="flex gap-4">
                     <label
                         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors ${range === "all"
-                                ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-950 dark:text-blue-300"
-                                : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
+                            ? "border-kraken bg-kraken-soft text-kraken-deep dark:border-kraken dark:bg-kraken-soft/20 dark:text-kraken"
+                            : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
                             }`}
                     >
                         <input
@@ -153,8 +153,8 @@ export default function ExportPage() {
                     </label>
                     <label
                         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors ${range === "filtered"
-                                ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-950 dark:text-blue-300"
-                                : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
+                            ? "border-kraken bg-kraken-soft text-kraken-deep dark:border-kraken dark:bg-kraken-soft/20 dark:text-kraken"
+                            : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
                             }`}
                     >
                         <input
@@ -218,7 +218,7 @@ export default function ExportPage() {
                     <button
                         onClick={handleCsvExport}
                         disabled={isExporting}
-                        className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                        className="rounded-[12px] bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
                     >
                         {isExporting ? "导出中..." : "下载 CSV"}
                     </button>
@@ -235,8 +235,8 @@ export default function ExportPage() {
             {message && (
                 <div
                     className={`mt-6 rounded-lg border p-4 text-sm ${message.includes("成功")
-                            ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
-                            : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
+                        ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
+                        : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
                         }`}
                 >
                     {message}

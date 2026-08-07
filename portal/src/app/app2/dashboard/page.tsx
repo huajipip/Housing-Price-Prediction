@@ -263,7 +263,7 @@ export default function DashboardPage() {
                                 <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                                 <YAxis />
                                 <Tooltip />
-                                <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                                <Bar dataKey="count" fill="#7132f5" radius={[6, 6, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                                             : [num, name];
                                     }}
                                 />
-                                <Scatter data={scatterSqft.points} fill="#3b82f6" />
+                                <Scatter data={scatterSqft.points} fill="#7132f5" />
                             </ScatterChart>
                         </ResponsiveContainer>
                     </div>
@@ -339,7 +339,7 @@ export default function DashboardPage() {
                                             : [num, name];
                                     }}
                                 />
-                                <Scatter data={scatterDistance.points} fill="#f59e0b" />
+                                <Scatter data={scatterDistance.points} fill="#5741d8" />
                             </ScatterChart>
                         </ResponsiveContainer>
                     </div>
