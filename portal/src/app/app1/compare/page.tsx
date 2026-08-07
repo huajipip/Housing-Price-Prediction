@@ -78,6 +78,18 @@ export default function ComparePage() {
         setRows((prev) => (prev.length <= 1 ? prev : prev.filter((r) => r.id !== id)));
     };
 
+    /** 重排序：上移/下移指定行（需求要求支持重新排序） */
+    const moveRow = (id: string, direction: -1 | 1) => {
+        setRows((prev) => {
+            const index = prev.findIndex((r) => r.id === id);
+            const target = index + direction;
+            if (index < 0 || target < 0 || target >= prev.length) return prev;
+            const next = [...prev];
+            [next[index], next[target]] = [next[target], next[index]];
+            return next;
+        });
+    };
+
     /** CSV 文件上传 */
     const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -234,12 +246,30 @@ export default function ComparePage() {
                                     </td>
                                 )}
                                 <td className="px-3 py-2">
-                                    <button
-                                        onClick={() => removeRow(row.id)}
-                                        className="text-xs text-red-500 hover:underline"
-                                    >
-                                        删除
-                                    </button>
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => moveRow(row.id, -1)}
+                                            disabled={i === 0}
+                                            title="上移"
+                                            className="text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30 dark:hover:text-gray-200"
+                                        >
+                                            ↑
+                                        </button>
+                                        <button
+                                            onClick={() => moveRow(row.id, 1)}
+                                            disabled={i === rows.length - 1}
+                                            title="下移"
+                                            className="text-xs text-gray-400 hover:text-gray-700 disabled:opacity-30 dark:hover:text-gray-200"
+                                        >
+                                            ↓
+                                        </button>
+                                        <button
+                                            onClick={() => removeRow(row.id)}
+                                            className="ml-1 text-xs text-red-500 hover:underline"
+                                        >
+                                            删除
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

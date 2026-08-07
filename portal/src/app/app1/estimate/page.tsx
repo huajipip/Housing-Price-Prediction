@@ -10,7 +10,8 @@
  * - 自动保存到 localStorage 历史记录
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -87,6 +88,29 @@ export default function EstimatePage() {
     } = useForm<FormValues>({
         resolver: zodResolver(houseSchema),
     });
+
+    // 从历史记录回填：读取 ?prefill=<JSON 特征> 并预填表单
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        const raw = searchParams.get("prefill");
+        if (!raw) return;
+        try {
+            const features = JSON.parse(raw) as HouseFeatures;
+            // 只取 7 个特征字段，避免多余字段注入
+            const { square_footage, bedrooms, bathrooms, year_built, lot_size, distance_to_city_center, school_rating } = features;
+            reset({
+                square_footage,
+                bedrooms,
+                bathrooms,
+                year_built,
+                lot_size,
+                distance_to_city_center,
+                school_rating,
+            });
+        } catch {
+            /* 解析失败则忽略，保持空表单 */
+        }
+    }, [searchParams, reset]);
 
     /** 提交表单 */
     const onSubmit = async (data: FormValues) => {
@@ -263,7 +287,7 @@ export default function EstimatePage() {
             {predictedPrice === null && !error && (
                 <div className="mt-8 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-gray-900">
                     <p className="text-gray-500 dark:text-gray-400">
-                        请输入房源信息，点击「开始估值」获取 AI 预测价格。
+                        请输入房源信息开始估值
                     </p>
                 </div>
             )}

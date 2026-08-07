@@ -12,10 +12,19 @@
 
 import { usePredictionHistory } from "@/hooks/usePredictionHistory";
 import { FIELD_META } from "@/lib/constants";
-import type { HistoryEntry } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import type { HistoryEntry, HouseFeatures } from "@/lib/types";
 
 export default function HistoryPage() {
     const { history, removeEntry, removeBatch, clearAll } = usePredictionHistory();
+    const router = useRouter();
+
+    /** 点击某条记录 → 回填到估值预测表单（需求要求） */
+    const refillToEstimate = (features: HouseFeatures) => {
+        router.push(
+            `/app1/estimate?prefill=${encodeURIComponent(JSON.stringify(features))}`
+        );
+    };
 
     if (history.length === 0) {
         return (
@@ -86,8 +95,8 @@ export default function HistoryPage() {
                                 <tr
                                     key={entry.id}
                                     className={`border-t border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 ${isInBatch
-                                            ? "border-l-4 border-l-blue-400 bg-blue-50/30 dark:border-l-blue-600 dark:bg-blue-950/10"
-                                            : ""
+                                        ? "border-l-4 border-l-blue-400 bg-blue-50/30 dark:border-l-blue-600 dark:bg-blue-950/10"
+                                        : ""
                                         } ${isBatchStart
                                             ? "border-t-2 border-t-blue-300 dark:border-t-blue-700"
                                             : ""
@@ -137,23 +146,32 @@ export default function HistoryPage() {
                                         })}
                                     </td>
                                     <td className="px-3 py-2">
-                                        <button
-                                            onClick={() => removeEntry(entry.id)}
-                                            className="text-xs text-red-500 hover:underline"
-                                        >
-                                            删除
-                                        </button>
-                                        {isBatchStart && entry.batchId && (
+                                        <div className="flex items-center gap-2">
                                             <button
-                                                onClick={() =>
-                                                    removeBatch(entry.batchId!)
-                                                }
-                                                className="ml-2 text-xs text-orange-500 hover:underline"
-                                                title={`删除此批次全部 ${batchSize} 条记录`}
+                                                onClick={() => refillToEstimate(entry.features)}
+                                                className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                                title="回填到估值预测表单"
                                             >
-                                                删除整批
+                                                回填
                                             </button>
-                                        )}
+                                            <button
+                                                onClick={() => removeEntry(entry.id)}
+                                                className="text-xs text-red-500 hover:underline"
+                                            >
+                                                删除
+                                            </button>
+                                            {isBatchStart && entry.batchId && (
+                                                <button
+                                                    onClick={() =>
+                                                        removeBatch(entry.batchId!)
+                                                    }
+                                                    className="text-xs text-orange-500 hover:underline"
+                                                    title={`删除此批次全部 ${batchSize} 条记录`}
+                                                >
+                                                    删除整批
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             );
