@@ -80,7 +80,7 @@ export default function ModelInfoCard() {
                         className="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800"
                     >
                         <p className="text-xs text-gray-500">{key.toUpperCase()}</p>
-                        <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        <p className="text-lg font-bold text-kraken dark:text-kraken">
                             {typeof val === "number" ? val.toFixed(4) : val}
                         </p>
                     </div>

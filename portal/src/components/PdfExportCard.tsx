@@ -83,23 +83,23 @@ export default function PdfExportCard({ activeFilters, onMessage }: PdfExportCar
     };
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <div className="mb-4 inline-flex rounded-lg bg-red-100 p-2 dark:bg-red-900/40">
-                <svg className="h-6 w-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="card p-6">
+            <div className="mb-4 inline-flex rounded-lg bg-kraken-soft p-2">
+                <svg className="h-6 w-6 text-kraken" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="mb-2 text-lg font-semibold text-ink dark:text-white">
                 PDF 报告导出
             </h3>
-            <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mb-4 text-sm text-coolgray dark:text-silver">
                 生成包含仪表盘摘要的 PDF 报告（统计概览 + 价格分布）。点击按钮后会自动下载。
             </p>
 
             <button
                 onClick={handleGenerateAndDownload}
                 disabled={isGenerating}
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
+                className="btn-kraken px-4 py-2 text-sm font-medium text-white"
             >
                 {isGenerating ? "正在生成 PDF..." : "下载 PDF 报告"}
             </button>

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 10,
         paddingBottom: 4,
-        borderBottom: "2 solid #3b82f6",
+        borderBottom: "2 solid #7132f5",
         color: "#1e40af",
     },
     statRow: {
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     },
     distBar: {
         height: 14,
-        backgroundColor: "#3b82f6",
+        backgroundColor: "#7132f5",
         borderRadius: 3,
         minWidth: 4,
     },
