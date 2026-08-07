@@ -20,17 +20,17 @@ export default function App1Layout({
     return (
         <div>
             {/* 子导航 */}
-            <div className="border-b border-gray-200 bg-blue-50/50 dark:border-gray-800 dark:bg-blue-950/20">
+            <div className="border-b border-line bg-kraken-soft/50 dark:border-gray-800 dark:bg-kraken-soft/10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-1 overflow-x-auto py-3">
-                        <span className="mr-4 text-sm font-semibold text-blue-700 dark:text-blue-300">
+                        <span className="mr-4 text-sm font-semibold text-kraken-deep dark:text-kraken">
                             App 1 · 房源估值器
                         </span>
                         {SUB_NAV.map((item) => (
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className="rounded-lg px-3 py-1.5 text-sm text-gray-600 transition-colors hover:bg-white hover:text-blue-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-300"
+                                className="rounded-lg px-3 py-1.5 text-sm text-coolgray transition-colors hover:bg-white hover:text-kraken-deep dark:text-silver dark:hover:bg-gray-800 dark:hover:text-kraken"
                             >
                                 {item.label}
                             </Link>

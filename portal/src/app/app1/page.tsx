@@ -11,8 +11,8 @@ export default function App1Page() {
                 选择上方子导航开始使用，或前往：
             </p>
             <div className="flex justify-center gap-4">
-                <Link href="/app1/estimate" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">开始估值</Link>
-                <Link href="/app1/compare" className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800">批量对比</Link>
+                <Link href="/app1/estimate" className="btn-kraken px-4 py-2 text-sm font-medium text-white">开始估值</Link>
+                <Link href="/app1/compare" className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-coolgray hover:bg-kraken-soft dark:border-gray-600 dark:text-silver">批量对比</Link>
             </div>
         </div>
     );
