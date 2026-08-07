@@ -1,31 +1,79 @@
 @import "tailwindcss";
 
 /* ============================================================
- * Housing Portal — 全局样式 & 设计令牌
+ * Housing Portal — 全局样式 & 设计令牌（Design System: Kraken）
+ * 参考 DESIGN.md
  * ============================================================ */
 
 :root {
+  /* 表面色 */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #101114;
+  /* Near Black */
 
-  /* 主题色 */
-  --color-primary: #2563eb;
-  --color-primary-light: #3b82f6;
-  --color-primary-dark: #1d4ed8;
-  --color-accent: #f59e0b;
+  /* Kraken 品牌紫（单一品牌色） */
+  --color-kraken: #7132f5;
+  /* 主 CTA / 链接 */
+  --color-kraken-dark: #5741d8;
+  /* 描边 / outlined 变体 */
+  --color-kraken-deep: #5b1ecf;
+  /* 最深紫 */
+  --color-kraken-soft: rgba(133, 91, 251, 0.16);
+  /* 16% 弱紫底 */
+  --color-kraken-soft-strong: rgba(133, 91, 251, 0.24);
+
+  /* 中性色 */
+  --color-ink: #101114;
+  /* 主文本 */
+  --color-coolgray: #686b82;
+  /* 主中性色，边框 24% 透明度 */
+  --color-silver: #9497a9;
+  /* 次级文本 */
+  --color-line: #dedee5;
+  /* 分割线/边框 */
+
+  /* 语义色 */
+  --color-success: #149e61;
+  /* 成功/正值 */
+  --color-success-dark: #026b3f;
+  /* 徽章文字 */
+  --color-success-soft: rgba(20, 158, 97, 0.16);
+
+  /* 字体（Kraken-Brand / Kraken-Product 的兼容回退栈） */
+  --font-display: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* 圆角 & 阴影 */
+  --radius-btn: 12px;
+  --shadow-subtle: 0 4px 24px rgba(0, 0, 0, 0.03);
+  --shadow-micro: 0 1px 4px rgba(16, 24, 40, 0.04);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 
-  /* 自定义主题色 */
-  --color-primary: var(--color-primary);
-  --color-primary-light: var(--color-primary-light);
-  --color-primary-dark: var(--color-primary-dark);
-  --color-accent: var(--color-accent);
+  /* Kraken 品牌色 */
+  --color-kraken: var(--color-kraken);
+  --color-kraken-dark: var(--color-kraken-dark);
+  --color-kraken-deep: var(--color-kraken-deep);
+  --color-kraken-soft: var(--color-kraken-soft);
+
+  /* 中性 & 语义色 */
+  --color-ink: var(--color-ink);
+  --color-coolgray: var(--color-coolgray);
+  --color-silver: var(--color-silver);
+  --color-line: var(--color-line);
+  --color-success: var(--color-success);
+  --color-success-dark: var(--color-success-dark);
+  --color-success-soft: var(--color-success-soft);
+
+  /* 圆角 & 阴影 */
+  --radius-btn: var(--radius-btn);
+  --shadow-subtle: var(--shadow-subtle);
+  --shadow-micro: var(--shadow-micro);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,7 +86,71 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 标题使用 Display 字体（Kraken-Brand 回退），负字距 */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.5px;
+}
+
+/* ============================================================
+ * 通用组件类（Kraken 规范）
+ * ============================================================ */
+
+/* 主 CTA：Kraken 紫，12px 圆角 */
+.btn-kraken {
+  background: var(--color-kraken);
+  color: #ffffff;
+  border-radius: var(--radius-btn);
+  padding: 13px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.btn-kraken:hover {
+  background: var(--color-kraken-deep);
+}
+
+.btn-kraken:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 紫色描边变体 */
+.btn-outline {
+  background: #ffffff;
+  color: var(--color-kraken-dark);
+  border: 1px solid var(--color-kraken-dark);
+  border-radius: var(--radius-btn);
+  padding: 13px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.btn-outline:hover {
+  background: var(--color-kraken-soft);
+}
+
+/* 卡片：白底 + 细边框 + 微妙阴影 */
+.card {
+  background: #ffffff;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-subtle);
+}
+
+/* 成功徽章（正值/成功态） */
+.badge-success {
+  background: var(--color-success-soft);
+  color: var(--color-success-dark);
+  border-radius: 6px;
 }
 
 /* ============================================================
