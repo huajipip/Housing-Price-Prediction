@@ -83,6 +83,14 @@ class PredictionResponse(BaseModel):
     )
 
 
+class FeatureStats(BaseModel):
+    """单个特征在训练数据集中的统计量（供前端 what-if 滑块设范围）。"""
+
+    min: float = Field(..., description="训练集中的最小值", examples=[980.0])
+    max: float = Field(..., description="训练集中的最大值", examples=[2400.0])
+    mean: float = Field(..., description="训练集中的平均值", examples=[1690.2])
+
+
 class ModelInfoResponse(BaseModel):
     """/model-info 端点的响应模型。"""
 
@@ -97,6 +105,10 @@ class ModelInfoResponse(BaseModel):
     metrics: dict[str, float] = Field(
         ...,
         description="性能指标：R²、MSE、MAE、RMSE",
+    )
+    feature_stats: dict[str, FeatureStats] = Field(
+        ...,
+        description="各特征在训练集中的 min/max/mean，供前端 what-if 滑块设置范围",
     )
 
 

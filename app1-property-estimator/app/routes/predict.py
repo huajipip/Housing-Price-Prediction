@@ -45,6 +45,7 @@ async def single_predict(features: HouseFeatures):
             content={
                 "error": True,
                 "message": "预测服务暂时不可用，请稍后重试。",
+                "detail": f"Task 1 连接失败: {type(exc).__name__}: {exc}",
             },
         )
     except _json.JSONDecodeError as exc:
@@ -54,6 +55,7 @@ async def single_predict(features: HouseFeatures):
             content={
                 "error": True,
                 "message": "预测服务返回格式异常，请稍后重试。",
+                "detail": f"响应解析失败: {exc}",
             },
         )
 
@@ -81,6 +83,7 @@ async def batch_predict(batch: BatchRequest):
             content={
                 "error": True,
                 "message": "预测服务暂时不可用，请稍后重试。",
+                "detail": f"Task 1 连接失败: {type(exc).__name__}: {exc}",
             },
         )
     except _json.JSONDecodeError as exc:
@@ -90,5 +93,6 @@ async def batch_predict(batch: BatchRequest):
             content={
                 "error": True,
                 "message": "预测服务返回格式异常，请稍后重试。",
+                "detail": f"响应解析失败: {exc}",
             },
         )
