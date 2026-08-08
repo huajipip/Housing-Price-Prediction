@@ -247,7 +247,7 @@ export default function ComparePage() {
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-3xl font-bold text-ink">
                 批量房源对比
             </h2>
 
@@ -256,11 +256,11 @@ export default function ComparePage() {
                 <button
                     onClick={addRow}
                     disabled={rows.length >= MAX_ROWS}
-                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="btn-secondary disabled:opacity-50"
                 >
                     + 添加行 ({rows.length}/{MAX_ROWS})
                 </button>
-                <label className="cursor-pointer rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800">
+                <label className="btn-secondary cursor-pointer">
                     📄 上传 CSV
                     <input
                         type="file"
@@ -272,22 +272,19 @@ export default function ComparePage() {
                 <button
                     onClick={handlePredict}
                     disabled={isLoading}
-                    className="rounded-[12px] bg-kraken px-4 py-1.5 text-sm font-medium text-white hover:bg-kraken-deep disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                 >
                     {isLoading ? "预测中..." : "批量预测"}
                 </button>
-                <button
-                    onClick={resetAll}
-                    className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-gray-600 dark:text-red-400 dark:hover:bg-red-950"
-                >
+                <button onClick={resetAll} className="btn-danger">
                     重置全部
                 </button>
             </div>
 
             {/* 表格 */}
-            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+            <div className="overflow-x-auto rounded-xl border border-line">
                 <table className="w-full text-sm">
-                    <thead className="bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                    <thead className="bg-surface-subtle text-ink">
                         <tr>
                             <th className="px-3 py-2 text-left">#</th>
                             {Object.values(FIELD_META).map((f) => (
@@ -296,7 +293,7 @@ export default function ComparePage() {
                                 </th>
                             ))}
                             {results && (
-                                <th className="px-3 py-2 text-left font-semibold text-green-700">
+                                <th className="px-3 py-2 text-left font-semibold text-success">
                                     预测价格
                                 </th>
                             )}
@@ -307,9 +304,9 @@ export default function ComparePage() {
                         {rows.map((row, i) => (
                             <tr
                                 key={row.id}
-                                className="border-t border-gray-100 dark:border-gray-800"
+                                className="border-t border-line/60"
                             >
-                                <td className="px-3 py-2 text-gray-500">{i + 1}</td>
+                                <td className="px-3 py-2 text-silver">{i + 1}</td>
                                 {Object.values(FIELD_META).map((f) => (
                                     <td key={f.key} className="px-3 py-2">
                                         <input
@@ -319,17 +316,17 @@ export default function ComparePage() {
                                             max={f.max}
                                             value={row[f.key] || ""}
                                             onChange={(e) => updateRow(row.id, f.key, e.target.value)}
-                                            className="w-24 rounded border border-gray-200 px-2 py-1 text-xs dark:border-gray-700 dark:bg-gray-800"
+                                            className="w-24 rounded border border-line bg-input px-2 py-1 text-xs"
                                         />
                                     </td>
                                 ))}
                                 {results && (
                                     <td
                                         className={`px-3 py-2 font-semibold ${results[i].predictedPrice === maxPrice
-                                            ? "text-green-600 dark:text-green-400"
+                                            ? "text-success"
                                             : results[i].predictedPrice === minPrice
-                                                ? "text-red-600 dark:text-red-400"
-                                                : "text-gray-700 dark:text-gray-300"
+                                                ? "text-danger"
+                                                : "text-ink"
                                             }`}
                                     >
                                         $
@@ -345,7 +342,7 @@ export default function ComparePage() {
                                             disabled={i === 0}
                                             title="上移"
                                             aria-label="上移"
-                                            className="rounded-md border border-gray-200 px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-silver dark:hover:text-kraken"
+                                            className="rounded-md border border-line px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -356,7 +353,7 @@ export default function ComparePage() {
                                             disabled={i === rows.length - 1}
                                             title="下移"
                                             aria-label="下移"
-                                            className="rounded-md border border-gray-200 px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-700 dark:text-silver dark:hover:text-kraken"
+                                            className="rounded-md border border-line px-2 py-1 text-sm text-coolgray transition-colors hover:border-kraken hover:text-kraken disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -364,7 +361,7 @@ export default function ComparePage() {
                                         </button>
                                         <button
                                             onClick={() => removeRow(row.id)}
-                                            className="ml-1 rounded-md border border-red-200 px-2 py-1 text-xs text-red-600 transition-colors hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                                            className="ml-1 rounded-md border border-danger/40 px-2 py-1 text-xs text-danger transition-colors hover:bg-danger-soft"
                                         >
                                             删除
                                         </button>
@@ -378,7 +375,7 @@ export default function ComparePage() {
 
             {/* 错误 */}
             {error && (
-                <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                <div className="mt-4 rounded-lg border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
                     {error}
                 </div>
             )}
@@ -387,20 +384,20 @@ export default function ComparePage() {
             {results && results.length > 0 && (
                 <div className="mt-8 space-y-6">
                     {/* ① 对比摘要 */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-                        <h3 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="rounded-xl border border-line bg-surface p-5 shadow-subtle">
+                        <h3 className="mb-2 text-sm font-medium text-ink">
                             对比分析摘要
                         </h3>
                         {summary && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-coolgray">
                                 共 {results.length} 套房源：
-                                <span className="font-semibold text-green-600 dark:text-green-400">
+                                <span className="font-semibold text-success">
                                     {" "}最贵 #
                                     {results.findIndex((r) => r.predictedPrice === maxPrice) + 1}（$
                                     {maxPrice.toLocaleString("en-US", { maximumFractionDigits: 2 })}）
                                 </span>
                                 、
-                                <span className="font-semibold text-red-600 dark:text-red-400">
+                                <span className="font-semibold text-danger">
                                     {" "}最便宜 #
                                     {results.findIndex((r) => r.predictedPrice === minPrice) + 1}（$
                                     {minPrice.toLocaleString("en-US", { maximumFractionDigits: 2 })}）
@@ -419,7 +416,7 @@ export default function ComparePage() {
 
                     {/* ② 排序控制（仅作用于对比视图） */}
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">排序：</span>
+                        <span className="text-sm text-silver">排序：</span>
                         {(
                             [
                                 { value: null, label: "原始顺序" },
@@ -432,8 +429,8 @@ export default function ComparePage() {
                                 onClick={() => setSortOrder(opt.value)}
                                 aria-pressed={sortOrder === opt.value}
                                 className={`rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${sortOrder === opt.value
-                                        ? "border-kraken bg-kraken text-white"
-                                        : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                                    ? "border-kraken bg-kraken text-white"
+                                    : "border-line text-coolgray hover:bg-surface-subtle"
                                     }`}
                             >
                                 {opt.label}
@@ -449,34 +446,34 @@ export default function ComparePage() {
                             return (
                                 <div
                                     key={r.id}
-                                    className={`rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-900 ${isMax
-                                            ? "border-green-400 ring-1 ring-green-400"
-                                            : isMin
-                                                ? "border-red-400 ring-1 ring-red-400"
-                                                : "border-gray-200 dark:border-gray-700"
+                                    className={`rounded-xl border bg-surface p-4 shadow-subtle ${isMax
+                                        ? "border-success/60 ring-1 ring-success/60"
+                                        : isMin
+                                            ? "border-danger/60 ring-1 ring-danger/60"
+                                            : "border-line"
                                         }`}
                                 >
                                     <div className="mb-2 flex items-center justify-between">
-                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        <span className="text-sm font-semibold text-ink">
                                             房源 #{i + 1}
                                         </span>
                                         {isMax && (
-                                            <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                                            <span className="badge-success px-1.5 py-0.5 text-[10px] font-medium">
                                                 最高价
                                             </span>
                                         )}
                                         {isMin && (
-                                            <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
+                                            <span className="badge-danger px-1.5 py-0.5 text-[10px] font-medium">
                                                 最低价
                                             </span>
                                         )}
                                     </div>
                                     <div
                                         className={`mb-3 text-2xl font-bold ${isMax
-                                                ? "text-green-600 dark:text-green-400"
-                                                : isMin
-                                                    ? "text-red-600 dark:text-red-400"
-                                                    : "text-kraken"
+                                            ? "text-success"
+                                            : isMin
+                                                ? "text-danger"
+                                                : "text-kraken"
                                             }`}
                                     >
                                         $
@@ -484,25 +481,25 @@ export default function ComparePage() {
                                             maximumFractionDigits: 2,
                                         })}
                                     </div>
-                                    <ul className="space-y-1 border-t border-gray-100 pt-3 dark:border-gray-800">
+                                    <ul className="space-y-1 border-t border-line/60 pt-3">
                                         {Object.values(FIELD_META).map((f) => {
                                             const dir = diffVsMean(f.key, r[f.key]);
                                             return (
                                                 <li
                                                     key={f.key}
-                                                    className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400"
+                                                    className="flex items-center justify-between text-xs text-coolgray"
                                                     title={`数据集均值约 ${modelInfo?.feature_stats?.[f.key]?.mean ?? "—"}`}
                                                 >
                                                     <span>{f.label}</span>
                                                     <span className="flex items-center gap-1">
                                                         {dir === "high" && (
-                                                            <span aria-label="高于均值" className="text-green-600">▲</span>
+                                                            <span aria-label="高于均值" className="text-success">▲</span>
                                                         )}
                                                         {dir === "low" && (
-                                                            <span aria-label="低于均值" className="text-red-600">▼</span>
+                                                            <span aria-label="低于均值" className="text-danger">▼</span>
                                                         )}
                                                         {r[f.key]}
-                                                        <span className="text-gray-400">{f.unit}</span>
+                                                        <span className="text-silver">{f.unit}</span>
                                                     </span>
                                                 </li>
                                             );
@@ -514,10 +511,10 @@ export default function ComparePage() {
                     </div>
 
                     {/* ④ 价格对比图（含数据集基准价参考线） */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="rounded-xl border border-line bg-surface p-6">
+                        <h3 className="mb-4 text-sm font-medium text-ink">
                             价格对比图
-                            <span className="ml-2 text-xs text-gray-400">
+                            <span className="ml-2 text-xs text-silver">
                                 （🟢 最高价 &nbsp; 🔴 最低价
                                 {modelInfo && " &nbsp; ┅ 数据集基准价"})
                             </span>
@@ -550,13 +547,13 @@ export default function ComparePage() {
                                 {modelInfo && (
                                     <ReferenceLine
                                         x={modelInfo.intercept}
-                                        stroke="#9ca3af"
+                                        stroke="#9497a9"
                                         strokeDasharray="3 3"
                                         label={{
                                             value: "基准价",
                                             position: "insideTopLeft",
                                             fontSize: 11,
-                                            fill: "#9ca3af",
+                                            fill: "#9497a9",
                                         }}
                                     />
                                 )}
@@ -566,9 +563,9 @@ export default function ComparePage() {
                                             key={r.id}
                                             fill={
                                                 r.predictedPrice === maxPrice
-                                                    ? "#22c55e"
+                                                    ? "#149e61"
                                                     : r.predictedPrice === minPrice
-                                                        ? "#ef4444"
+                                                        ? "#b42318"
                                                         : "#7132f5"
                                             }
                                         />

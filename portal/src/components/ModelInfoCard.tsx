@@ -32,13 +32,13 @@ export default function ModelInfoCard() {
     // 加载中：显示骨架屏
     if (loading) {
         return (
-            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <div className="mb-4 h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-line bg-surface p-6 shadow-micro">
+                <div className="mb-4 h-6 w-32 animate-pulse rounded bg-line/60" />
                 <div className="grid grid-cols-4 gap-3">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-                            <div className="mx-auto mb-1 h-3 w-10 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-                            <div className="mx-auto h-5 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                        <div key={i} className="rounded-lg bg-surface-subtle p-3">
+                            <div className="mx-auto mb-1 h-3 w-10 animate-pulse rounded bg-line/60" />
+                            <div className="mx-auto h-5 w-16 animate-pulse rounded bg-line/60" />
                         </div>
                     ))}
                 </div>
@@ -49,7 +49,7 @@ export default function ModelInfoCard() {
     // 加载失败：显示错误提示
     if (error || !info) {
         return (
-            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 shadow-sm dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+            <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-warning/40 bg-warning-soft p-4 text-sm text-warning shadow-micro">
                 模型信息暂时无法加载，请确认 Task 1 服务运行正常。
             </div>
         );
@@ -67,8 +67,8 @@ export default function ModelInfoCard() {
     };
 
     return (
-        <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="mx-auto mt-10 max-w-3xl rounded-xl border border-line bg-surface p-6 shadow-micro">
+            <h3 className="mb-4 text-lg font-semibold text-ink">
                 ML 模型信息
             </h3>
 
@@ -77,10 +77,10 @@ export default function ModelInfoCard() {
                 {Object.entries(info.metrics).map(([key, val]) => (
                     <div
                         key={key}
-                        className="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800"
+                        className="rounded-lg bg-surface-subtle p-3 text-center"
                     >
-                        <p className="text-xs text-gray-500">{key.toUpperCase()}</p>
-                        <p className="text-lg font-bold text-kraken dark:text-kraken">
+                        <p className="text-xs text-silver">{key.toUpperCase()}</p>
+                        <p className="text-lg font-bold text-kraken">
                             {typeof val === "number" ? val.toFixed(4) : val}
                         </p>
                     </div>
@@ -89,18 +89,18 @@ export default function ModelInfoCard() {
 
             {/* 特征系数（影响权重） */}
             <div>
-                <p className="mb-2 text-xs text-gray-500">特征影响权重</p>
+                <p className="mb-2 text-xs text-silver">特征影响权重</p>
                 <div className="space-y-1.5">
                     {Object.entries(info.coefficients)
                         .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
                         .map(([key, val]) => (
                             <div key={key} className="flex items-center gap-2 text-sm">
-                                <span className="w-24 text-gray-600 dark:text-gray-400">
+                                <span className="w-24 text-coolgray">
                                     {featureNames[key] || key}
                                 </span>
-                                <div className="h-3 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+                                <div className="h-3 flex-1 rounded-full bg-line/60">
                                     <div
-                                        className={`h-3 rounded-full ${val >= 0 ? "bg-green-500" : "bg-red-500"
+                                        className={`h-3 rounded-full ${val >= 0 ? "bg-success" : "bg-danger"
                                             }`}
                                         style={{
                                             width: `${Math.min(
@@ -117,7 +117,7 @@ export default function ModelInfoCard() {
                                     />
                                 </div>
                                 <span
-                                    className={`w-20 text-right font-mono text-xs ${val >= 0 ? "text-green-600" : "text-red-600"
+                                    className={`w-20 text-right font-mono text-xs ${val >= 0 ? "text-success" : "text-danger"
                                         }`}
                                 >
                                     {val >= 0 ? "+" : ""}

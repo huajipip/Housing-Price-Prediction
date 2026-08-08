@@ -22,7 +22,7 @@ export default function GlobalError({
     return (
         <html lang="zh-CN">
             <body>
-                <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6 dark:bg-gray-950">
+                <div className="flex min-h-screen items-center justify-center bg-surface-subtle p-6 dark:bg-background">
                     <ErrorDisplay
                         error={error}
                         reset={reset}

@@ -12,10 +12,10 @@ export default function HomePage() {
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
       {/* 标题区 */}
       <div className="mb-12 text-center">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-ink dark:text-white sm:text-5xl">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
           Housing Price Portal
         </h1>
-        <p className="mx-auto max-w-2xl text-lg text-coolgray dark:text-silver">
+        <p className="mx-auto max-w-2xl text-lg text-coolgray">
           基于机器学习模型的统一房价预测门户。选择下方应用开始使用。
         </p>
       </div>
@@ -25,7 +25,7 @@ export default function HomePage() {
         {/* App1 卡片 */}
         <Link
           href="/app1"
-          className="group card p-8 transition-all hover:border-kraken hover:shadow-subtle dark:bg-gray-900"
+          className="group card p-8 transition-all hover:border-kraken"
         >
           <div className="mb-4 inline-flex rounded-xl bg-kraken-soft p-3">
             <svg
@@ -42,13 +42,13 @@ export default function HomePage() {
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-2xl font-semibold text-ink dark:text-white">
+          <h2 className="mb-2 text-2xl font-semibold text-ink">
             App 1 · 房源估值器
           </h2>
-          <p className="mb-4 text-sm text-coolgray dark:text-silver">
+          <p className="mb-4 text-base text-coolgray">
             Property Value Estimator
           </p>
-          <ul className="space-y-2 text-sm text-coolgray dark:text-silver">
+          <ul className="space-y-2 text-sm text-coolgray">
             <li>• 输入房源特征，一键获取AI预测价格</li>
             <li>• 支持单个和批量房源对比分析</li>
             <li>• 历史估值记录自动保存</li>
@@ -62,7 +62,7 @@ export default function HomePage() {
         {/* App2 卡片 */}
         <Link
           href="/app2"
-          className="group card p-8 transition-all hover:border-kraken hover:shadow-subtle dark:bg-gray-900"
+          className="group card p-8 transition-all hover:border-kraken"
         >
           <div className="mb-4 inline-flex rounded-xl bg-kraken-soft p-3">
             <svg
@@ -79,13 +79,13 @@ export default function HomePage() {
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-2xl font-semibold text-ink dark:text-white">
+          <h2 className="mb-2 text-2xl font-semibold text-ink">
             App 2 · 市场分析
           </h2>
-          <p className="mb-4 text-sm text-coolgray dark:text-silver">
+          <p className="mb-4 text-base text-coolgray">
             Property Market Analysis
           </p>
-          <ul className="space-y-2 text-sm text-coolgray dark:text-silver">
+          <ul className="space-y-2 text-sm text-coolgray">
             <li>• 交互式仪表盘 + 数据可视化</li>
             <li>• What-If 情景模拟分析</li>
             <li>• 数据导出（CSV / PDF）</li>
@@ -102,7 +102,7 @@ export default function HomePage() {
 
       {/* 技术栈展示 */}
       <div className="mt-10 text-center">
-        <p className="text-xs text-silver dark:text-gray-500">
+        <p className="text-xs text-silver">
           Next.js App Router · Tailwind CSS · React Server Components · FastAPI · Spring Boot 3.4.4 · Scikit-learn
         </p>
       </div>

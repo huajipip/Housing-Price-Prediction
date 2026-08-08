@@ -45,14 +45,14 @@ function FilterBar({
     onFilterChange: (key: string, value: string) => void;
 }) {
     return (
-        <div className="flex flex-wrap gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+        <div className="flex flex-wrap gap-3 rounded-xl border border-line bg-surface p-4">
             <div>
-                <label htmlFor="f-min-bedrooms" className="mb-1 block text-xs text-gray-500">最少卧室数</label>
+                <label htmlFor="f-min-bedrooms" className="mb-1 block text-sm text-silver">最少卧室数</label>
                 <select
                     id="f-min-bedrooms"
                     value={filters.minBedrooms || ""}
                     onChange={(e) => onFilterChange("minBedrooms", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[1, 2, 3, 4].map((v) => (
@@ -61,12 +61,12 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label htmlFor="f-max-bedrooms" className="mb-1 block text-xs text-gray-500">最多卧室数</label>
+                <label htmlFor="f-max-bedrooms" className="mb-1 block text-sm text-silver">最多卧室数</label>
                 <select
                     id="f-max-bedrooms"
                     value={filters.maxBedrooms || ""}
                     onChange={(e) => onFilterChange("maxBedrooms", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[2, 3, 4, 5].map((v) => (
@@ -75,12 +75,12 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label htmlFor="f-min-year" className="mb-1 block text-xs text-gray-500">最早建造年</label>
+                <label htmlFor="f-min-year" className="mb-1 block text-sm text-silver">最早建造年</label>
                 <select
                     id="f-min-year"
                     value={filters.minYearBuilt || ""}
                     onChange={(e) => onFilterChange("minYearBuilt", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[1980, 1990, 2000, 2010].map((v) => (
@@ -89,12 +89,12 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label htmlFor="f-max-year" className="mb-1 block text-xs text-gray-500">最晚建造年</label>
+                <label htmlFor="f-max-year" className="mb-1 block text-sm text-silver">最晚建造年</label>
                 <select
                     id="f-max-year"
                     value={filters.maxYearBuilt || ""}
                     onChange={(e) => onFilterChange("maxYearBuilt", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[1990, 2000, 2010, 2020].map((v) => (
@@ -103,12 +103,12 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label htmlFor="f-min-school" className="mb-1 block text-xs text-gray-500">最低学校评分</label>
+                <label htmlFor="f-min-school" className="mb-1 block text-sm text-silver">最低学校评分</label>
                 <select
                     id="f-min-school"
                     value={filters.minSchoolRating || ""}
                     onChange={(e) => onFilterChange("minSchoolRating", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[6, 7, 8, 9].map((v) => (
@@ -117,12 +117,12 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label htmlFor="f-max-school" className="mb-1 block text-xs text-gray-500">最高学校评分</label>
+                <label htmlFor="f-max-school" className="mb-1 block text-sm text-silver">最高学校评分</label>
                 <select
                     id="f-max-school"
                     value={filters.maxSchoolRating || ""}
                     onChange={(e) => onFilterChange("maxSchoolRating", e.target.value)}
-                    className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                    className="rounded border border-line bg-input px-2 py-1 text-sm"
                 >
                     <option value="">不限</option>
                     {[7, 8, 9, 10].map((v) => (
@@ -155,9 +155,9 @@ function StatCard({
                 : value;
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-            <p className="text-xs text-gray-500">{label}</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="rounded-xl border border-line bg-surface p-4 shadow-subtle">
+            <p className="text-sm text-silver">{label}</p>
+            <p className="mt-1 text-2xl font-bold text-ink">
                 {formatted}
             </p>
         </div>
@@ -221,11 +221,11 @@ export default function DashboardPage() {
     if (!stats || stats.totalRecords === 0) {
         return (
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="mb-6 text-3xl font-bold text-ink">
                     市场分析仪表盘
                 </h2>
-                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-gray-900">
-                    <p className="text-gray-500">暂无匹配的数据，请调整筛选条件。</p>
+                <div className="rounded-xl border border-dashed border-line bg-surface-subtle p-12 text-center">
+                    <p className="text-coolgray">暂无匹配的数据，请调整筛选条件。</p>
                 </div>
             </div>
         );
@@ -233,7 +233,7 @@ export default function DashboardPage() {
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-3xl font-bold text-ink">
                 市场分析仪表盘
             </h2>
 
@@ -254,8 +254,8 @@ export default function DashboardPage() {
             <div className="grid gap-6 lg:grid-cols-2">
                 {/* 价格分布直方图 */}
                 {distribution && (
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="rounded-xl border border-line bg-surface p-6">
+                        <h3 className="mb-4 text-sm font-medium text-ink">
                             价格分布
                         </h3>
                         <ResponsiveContainer width="100%" height={250}>
@@ -277,8 +277,8 @@ export default function DashboardPage() {
 
                 {/* 相关性散点图：sqft vs price */}
                 {scatterSqft && (
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="rounded-xl border border-line bg-surface p-6">
+                        <h3 className="mb-4 text-sm font-medium text-ink">
                             居住面积 vs 房价 (散点)
                         </h3>
                         <ResponsiveContainer width="100%" height={250}>
@@ -315,8 +315,8 @@ export default function DashboardPage() {
 
                 {/* 相关性散点图：distance vs price */}
                 {scatterDistance && (
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="rounded-xl border border-line bg-surface p-6">
+                        <h3 className="mb-4 text-sm font-medium text-ink">
                             距市中心距离 vs 房价 (散点)
                         </h3>
                         <ResponsiveContainer width="100%" height={250}>
@@ -353,29 +353,29 @@ export default function DashboardPage() {
             </div>
 
             {/* 数据表 */}
-            <div className="mt-6 rounded-xl border border-gray-200 p-6 dark:border-gray-800 dark:bg-gray-900">
-                <h3 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="mt-6 rounded-xl border border-line bg-surface p-6 shadow-subtle">
+                <h3 className="mb-3 text-sm font-medium text-ink">
                     数据概要
                 </h3>
                 <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
                     <div>
-                        <span className="text-gray-500">总记录数:</span>{" "}
+                        <span className="text-silver">总记录数:</span>{" "}
                         <span className="font-semibold">{stats.totalRecords}</span>
                     </div>
                     <div>
-                        <span className="text-gray-500">平均面积:</span>{" "}
+                        <span className="text-silver">平均面积:</span>{" "}
                         <span className="font-semibold">{stats.meanSquareFootage.toFixed(0)} sq ft</span>
                     </div>
                     <div>
-                        <span className="text-gray-500">平均建造年份:</span>{" "}
+                        <span className="text-silver">平均建造年份:</span>{" "}
                         <span className="font-semibold">{stats.meanYearBuilt.toFixed(0)}</span>
                     </div>
                     <div>
-                        <span className="text-gray-500">平均学校评分:</span>{" "}
+                        <span className="text-silver">平均学校评分:</span>{" "}
                         <span className="font-semibold">{stats.meanSchoolRating.toFixed(1)}</span>
                     </div>
                     <div>
-                        <span className="text-gray-500">价格标准差:</span>{" "}
+                        <span className="text-silver">价格标准差:</span>{" "}
                         <span className="font-semibold">${stats.stdDevPrice.toLocaleString("en-US")}</span>
                     </div>
                 </div>

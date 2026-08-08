@@ -144,24 +144,24 @@ export default function EstimatePage() {
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-3xl font-bold text-ink">
                 房源估值预测
             </h2>
 
             {/* 表单 */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                className="rounded-xl border border-line bg-surface p-6 shadow-subtle"
             >
                 <div className="grid gap-4 sm:grid-cols-2">
                     {Object.values(FIELD_META).map((field) => (
                         <div key={field.key}>
                             <label
                                 htmlFor={field.key}
-                                className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                className="mb-1 block text-sm font-medium text-ink"
                             >
                                 {field.label}
-                                <span className="ml-1 text-xs text-gray-400">
+                                <span className="ml-1 text-xs text-silver">
                                     ({field.unit})
                                 </span>
                             </label>
@@ -176,16 +176,16 @@ export default function EstimatePage() {
                                     errors[field.key] ? `${field.key}-error` : undefined
                                 }
                                 {...register(field.key)}
-                                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 dark:bg-gray-800 ${errors[field.key]
-                                    ? "border-red-300 focus:ring-red-500 dark:border-red-700"
-                                    : "border-gray-300 focus:ring-kraken dark:border-gray-600"
+                                className={`w-full rounded-lg border bg-input px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 ${errors[field.key]
+                                    ? "border-danger/60 focus:ring-danger"
+                                    : "border-line focus:ring-kraken"
                                     }`}
                             />
                             {errors[field.key] && (
                                 <p
                                     id={`${field.key}-error`}
                                     role="alert"
-                                    className="mt-1 text-xs text-red-600"
+                                    className="mt-1 text-xs text-danger"
                                 >
                                     {errors[field.key]?.message}
                                 </p>
@@ -199,7 +199,7 @@ export default function EstimatePage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="rounded-[12px] bg-kraken px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-kraken-deep disabled:cursor-not-allowed disabled:opacity-50"
+                        className="btn-primary"
                     >
                         {isLoading ? (
                             <span className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function EstimatePage() {
                             setPredictedPrice(null);
                             setError(null);
                         }}
-                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="btn-secondary"
                     >
                         重置
                     </button>
@@ -246,7 +246,7 @@ export default function EstimatePage() {
             {error && (
                 <div
                     role="alert"
-                    className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
+                    className="mt-6 rounded-lg border border-danger/40 bg-danger-soft p-4 text-sm text-danger"
                 >
                     {error}
                 </div>
@@ -259,11 +259,11 @@ export default function EstimatePage() {
                     className="mt-8 space-y-6"
                 >
                     {/* 预测价格数字 */}
-                    <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-950">
-                        <p className="mb-2 text-sm text-green-700 dark:text-green-400">
+                    <div className="rounded-xl border border-success/40 bg-success-soft p-8 text-center">
+                        <p className="mb-2 text-sm text-success">
                             预测价格
                         </p>
-                        <p className="text-4xl font-bold text-green-800 dark:text-green-300">
+                        <p className="text-4xl font-bold text-success-dark">
                             $
                             {predictedPrice.toLocaleString("en-US", {
                                 minimumFractionDigits: 2,
@@ -275,9 +275,9 @@ export default function EstimatePage() {
                     <div
                         role="img"
                         aria-label="预测价格柱状图"
-                        className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+                        className="rounded-xl border border-line bg-surface p-6"
                     >
-                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <h3 className="mb-4 text-sm font-medium text-ink">
                             预测结果可视化
                         </h3>
                         <ResponsiveContainer width="100%" height={200}>
@@ -298,7 +298,7 @@ export default function EstimatePage() {
                                     ]}
                                 />
                                 <Bar dataKey="price" radius={[8, 8, 0, 0]}>
-                                    <Cell fill="#22c55e" />
+                                    <Cell fill="#149e61" />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
@@ -308,8 +308,8 @@ export default function EstimatePage() {
 
             {/* 空状态引导 */}
             {predictedPrice === null && !error && (
-                <div className="mt-8 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-gray-900">
-                    <p className="text-gray-500 dark:text-gray-400">
+                <div className="mt-8 rounded-xl border border-dashed border-line bg-surface-subtle p-12 text-center">
+                    <p className="text-coolgray">
                         请输入房源信息开始估值
                     </p>
                 </div>

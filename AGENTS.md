@@ -57,6 +57,15 @@
 - 顺带修正 `portal/src/lib/api.ts`：`getModelInfo` 返回类型 `Record<string, unknown>` → `ModelInfo`；清理 `app2/what-if/page.tsx` 里因此不再需要的双重 cast
 - 验证：`npx tsc --noEmit` 通过；`docker compose up -d --build portal` 重建后浏览器实测（3 套房源：摘要/排序/卡片/图表+基准线全部正常）
 
+### 增量：Portal UI/UX 设计系统落地（对齐 DESIGN.md）
+- 真实字体：`layout.tsx` 用 `next/font/google` 加载 **IBM Plex Sans**（400-700，构建期自托管），注入 `--font-plex`；`globals.css` 的 `--font-display/--font-body` 引用它，落地 Kraken 双字体体系（此前只有 CSS 回退栈、实际落到 Segoe UI）
+- 语义令牌补齐：新增 `surface/surface-subtle/input`（暗色自动翻转，去掉组件内散落的 `dark:bg-gray-*`）与 `danger/warning` 色（DESIGN.md 原本只定义 success）；`red/amber/green-*` 全部替换为 `danger/warning/success` 令牌
+- 按钮统一：新增 `.btn-primary/.btn-secondary/.btn-outline/.btn-danger`（全部 12px 圆角 + 13px 16px 内边距，符合 DESIGN.md 第 4/7 节），替换原先三处内边距不一的临时样式；CSV 下载等主操作统一为品牌紫主按钮
+- 中性色/阴影：卡片/表头/输入框迁移到 `border-line/bg-surface/bg-surface-subtle/bg-input`；卡片阴影统一 `shadow-subtle`（移除 `shadow-sm`）
+- 子导航激活态：新建共享客户端组件 `SubNav.tsx`（App1/App2 布局复用），激活标签 = 白色胶囊 + `aria-current="page"`（WCAG 2.4.1）；全局 `:focus-visible` 焦点环（WCAG 2.4.7）
+- 字号回调：页面标题 `text-2xl→text-3xl`，卡片正文 `text-sm→text-base`，表单/筛选/统计标签 `text-xs→text-sm`；图表配色统一到紫阶+success（去掉临时绿/琥珀 hex）
+- 验证：`npx tsc --noEmit` 通过；`docker compose up -d --build portal` 重建；浏览器实测计算样式（body/h2 = IBM Plex Sans、主按钮 12px/13-16px/#7132f5、danger #b42318、子导航激活胶囊、仪表盘图表正常）；遗留 1 个 lint error 为改动前已存在的 `usePredictionHistory.ts` setState-in-effect，不在本步骤范围
+
 ## 禁止事项
 - 不要使用与规定技术栈不符的框架或库
 - 不要生成与当前阶段无关的代码

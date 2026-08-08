@@ -24,12 +24,12 @@ import { app2Api } from "@/lib/api";
 const PdfExportCard = dynamic(() => import("@/components/PdfExportCard"), {
     ssr: false,
     loading: () => (
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-xl border border-line bg-surface p-6 shadow-subtle">
             <div className="h-full animate-pulse space-y-3">
-                <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-gray-700" />
-                <div className="h-5 w-32 rounded bg-gray-200 dark:bg-gray-700" />
-                <div className="h-4 w-48 rounded bg-gray-200 dark:bg-gray-700" />
-                <div className="h-9 w-28 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                <div className="h-8 w-8 rounded-lg bg-line/60" />
+                <div className="h-5 w-32 rounded bg-line/60" />
+                <div className="h-4 w-48 rounded bg-line/60" />
+                <div className="h-9 w-28 rounded-lg bg-line/60" />
             </div>
         </div>
     ),
@@ -123,22 +123,22 @@ export default function ExportPage() {
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-3xl font-bold text-ink">
                 数据导出
             </h2>
 
             {/* ================================================ */}
             {/* 导出范围选择 */}
             {/* ================================================ */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <h3 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <div className="mb-6 rounded-xl border border-line bg-surface p-6 shadow-subtle">
+                <h3 className="mb-3 text-sm font-semibold text-ink">
                     导出范围
                 </h3>
                 <div className="flex gap-4">
                     <label
                         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors ${range === "all"
-                            ? "border-kraken bg-kraken-soft text-kraken-deep dark:border-kraken dark:bg-kraken-soft/20 dark:text-kraken"
-                            : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
+                            ? "border-kraken bg-kraken-soft text-kraken-deep"
+                            : "border-line text-coolgray hover:border-kraken"
                             }`}
                     >
                         <input
@@ -153,8 +153,8 @@ export default function ExportPage() {
                     </label>
                     <label
                         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors ${range === "filtered"
-                            ? "border-kraken bg-kraken-soft text-kraken-deep dark:border-kraken dark:bg-kraken-soft/20 dark:text-kraken"
-                            : "border-gray-300 text-gray-600 hover:border-gray-400 dark:border-gray-700 dark:text-gray-400"
+                            ? "border-kraken bg-kraken-soft text-kraken-deep"
+                            : "border-line text-coolgray hover:border-kraken"
                             }`}
                     >
                         <input
@@ -174,12 +174,12 @@ export default function ExportPage() {
                     <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                         {filterFields.map((f) => (
                             <div key={f.key}>
-                                <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                                <label className="mb-1 block text-sm font-medium text-silver">
                                     {f.label}
                                 </label>
                                 <input
                                     type="number"
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    className="w-full rounded-lg border border-line bg-input px-3 py-1.5 text-sm"
                                     placeholder={f.placeholder}
                                     value={filters[f.key] || ""}
                                     onChange={(e) => updateFilter(f.key, e.target.value)}
@@ -190,7 +190,7 @@ export default function ExportPage() {
                 )}
 
                 {range === "filtered" && !activeFilters && (
-                    <p className="mt-3 text-xs text-amber-600 dark:text-amber-400">
+                    <p className="mt-3 text-xs text-warning">
                         ⚠️ 未设置任何筛选条件，将导出全部数据
                     </p>
                 )}
@@ -201,16 +201,16 @@ export default function ExportPage() {
             {/* ================================================ */}
             <div className="grid gap-6 sm:grid-cols-2">
                 {/* CSV 导出 */}
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                    <div className="mb-4 inline-flex rounded-lg bg-green-100 p-2 dark:bg-green-900/40">
-                        <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="rounded-xl border border-line bg-surface p-6 shadow-subtle">
+                    <div className="mb-4 inline-flex rounded-lg bg-success-soft p-2">
+                        <svg className="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="mb-2 text-lg font-semibold text-ink">
                         CSV 格式导出
                     </h3>
-                    <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                    <p className="mb-4 text-base text-coolgray">
                         {range === "all"
                             ? "导出完整数据集（含原始价格和模型预测价格），可在 Excel 中打开。"
                             : "按当前筛选条件导出数据（含原始价格和模型预测价格），可在 Excel 中打开。"}
@@ -218,7 +218,7 @@ export default function ExportPage() {
                     <button
                         onClick={handleCsvExport}
                         disabled={isExporting}
-                        className="rounded-[12px] bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                        className="btn-primary disabled:opacity-50"
                     >
                         {isExporting ? "导出中..." : "下载 CSV"}
                     </button>
@@ -234,9 +234,10 @@ export default function ExportPage() {
             {/* 状态消息 */}
             {message && (
                 <div
+                    role="status"
                     className={`mt-6 rounded-lg border p-4 text-sm ${message.includes("成功")
-                        ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
-                        : "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
+                        ? "border-success/40 bg-success-soft text-success-dark"
+                        : "border-danger/40 bg-danger-soft text-danger"
                         }`}
                 >
                     {message}

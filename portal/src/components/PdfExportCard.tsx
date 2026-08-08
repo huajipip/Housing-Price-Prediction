@@ -89,17 +89,17 @@ export default function PdfExportCard({ activeFilters, onMessage }: PdfExportCar
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-ink dark:text-white">
+            <h3 className="mb-2 text-lg font-semibold text-ink">
                 PDF 报告导出
             </h3>
-            <p className="mb-4 text-sm text-coolgray dark:text-silver">
+            <p className="mb-4 text-base text-coolgray">
                 生成包含仪表盘摘要的 PDF 报告（统计概览 + 价格分布）。点击按钮后会自动下载。
             </p>
 
             <button
                 onClick={handleGenerateAndDownload}
                 disabled={isGenerating}
-                className="btn-kraken px-4 py-2 text-sm font-medium text-white"
+                className="btn-primary"
             >
                 {isGenerating ? "正在生成 PDF..." : "下载 PDF 报告"}
             </button>

@@ -32,13 +32,13 @@ export default function Navbar() {
         pathname === href || pathname.startsWith(href + "/");
 
     return (
-        <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:border-gray-800 dark:bg-gray-950/95">
+        <nav className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:bg-background/95">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     {/* Logo + 首页链接 */}
                     <Link
                         href="/"
-                        className="flex items-center gap-2 text-lg font-bold text-ink dark:text-white"
+                        className="flex items-center gap-2 text-lg font-bold text-ink"
                     >
                         <span className="rounded-lg bg-kraken px-2 py-1 text-sm text-white">
                             HP
@@ -55,7 +55,7 @@ export default function Navbar() {
                                 aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${isActive(item.href)
                                     ? "bg-kraken-soft text-kraken-deep dark:text-kraken"
-                                    : "text-coolgray hover:bg-gray-100 hover:text-ink dark:text-silver dark:hover:bg-gray-800 dark:hover:text-white"
+                                    : "text-coolgray hover:bg-surface-subtle hover:text-ink dark:text-silver dark:hover:text-white"
                                     }`}
                                 title={item.description}
                             >
@@ -66,7 +66,7 @@ export default function Navbar() {
 
                     {/* 移动端汉堡按钮 */}
                     <button
-                        className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 sm:hidden"
+                        className="rounded-lg p-2 text-coolgray hover:bg-surface-subtle sm:hidden"
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-label={mobileOpen ? "关闭菜单" : "打开菜单"}
                         aria-expanded={mobileOpen}
@@ -83,7 +83,7 @@ export default function Navbar() {
 
                 {/* 移动端菜单 */}
                 {mobileOpen && (
-                    <div className="border-t border-gray-200 pb-3 dark:border-gray-800 sm:hidden">
+                    <div className="border-t border-line pb-3 sm:hidden">
                         {NAV_ITEMS.map((item) => (
                             <Link
                                 key={item.href}
@@ -92,7 +92,7 @@ export default function Navbar() {
                                 aria-current={isActive(item.href) ? "page" : undefined}
                                 className={`block rounded-lg px-4 py-3 text-sm font-medium ${isActive(item.href)
                                     ? "bg-kraken-soft text-kraken-deep dark:text-kraken"
-                                    : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                    : "text-coolgray hover:bg-surface-subtle"
                                     }`}
                             >
                                 <div>{item.label}</div>

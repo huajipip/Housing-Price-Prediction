@@ -28,7 +28,7 @@ import { useMarketStats } from "@/hooks/useMarketStats";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { HouseFeatures, FeatureStats, WhatIfResponse } from "@/lib/types";
 
-const COLORS = ["#7132f5", "#5741d8", "#22c55e", "#f59e0b", "#5b1ecf"];
+const COLORS = ["#7132f5", "#5741d8", "#5b1ecf", "#149e61", "#9497a9"];
 
 export default function WhatIfPage() {
     // 基准特征
@@ -188,13 +188,13 @@ export default function WhatIfPage() {
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mb-6 text-3xl font-bold text-ink">
                 What-If 情景分析
             </h2>
 
             {/* 基准特征输入 */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                <h3 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="mb-6 rounded-xl border border-line bg-surface p-6 shadow-subtle">
+                <h3 className="mb-3 text-sm font-medium text-ink">
                     基准房源参数
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-4">
@@ -202,7 +202,7 @@ export default function WhatIfPage() {
                         <div key={f.key}>
                             <label
                                 htmlFor={`whatif-${f.key}`}
-                                className="mb-1 block text-xs text-gray-500"
+                                className="mb-1 block text-sm text-silver"
                             >
                                 {f.label}
                             </label>
@@ -220,7 +220,7 @@ export default function WhatIfPage() {
                                                 : parseFloat(e.target.value) || 0,
                                     }))
                                 }
-                                className="w-full rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                                className="w-full rounded border border-line bg-input px-2 py-1 text-sm"
                             />
                         </div>
                     ))}
@@ -228,14 +228,14 @@ export default function WhatIfPage() {
             </div>
 
             {/* 变化控制 */}
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                <h3 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <div className="mb-6 rounded-xl border border-line bg-surface p-6 shadow-subtle">
+                <h3 className="mb-3 text-sm font-medium text-ink">
                     变化分析控制
                 </h3>
                 <div className="flex flex-wrap items-end gap-4">
                     {/* 选择特征 */}
                     <div>
-                        <label htmlFor="vary-feature" className="mb-1 block text-xs text-gray-500">变化特征</label>
+                        <label htmlFor="vary-feature" className="mb-1 block text-sm text-silver">变化特征</label>
                         <select
                             id="vary-feature"
                             value={varyFeature}
@@ -248,7 +248,7 @@ export default function WhatIfPage() {
                                 setRangeMax(newStats?.max ?? f.max);
                                 setCurves([]);
                             }}
-                            className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
+                            className="rounded border border-line bg-input px-2 py-1 text-sm"
                         >
                             {Object.values(FIELD_META).map((f) => (
                                 <option key={f.key} value={f.key}>
@@ -260,10 +260,10 @@ export default function WhatIfPage() {
 
                     {/* 最小值滑块 */}
                     <div>
-                        <label htmlFor="range-min" className="mb-1 block text-xs text-gray-500">
+                        <label htmlFor="range-min" className="mb-1 block text-sm text-silver">
                             最小值: <span className="font-medium">{rangeMin}</span>
                             {stats && (
-                                <span className="ml-1 text-gray-400">
+                                <span className="ml-1 text-silver">
                                     (训练: {stats.min})
                                 </span>
                             )}
@@ -282,10 +282,10 @@ export default function WhatIfPage() {
 
                     {/* 最大值滑块 */}
                     <div>
-                        <label htmlFor="range-max" className="mb-1 block text-xs text-gray-500">
+                        <label htmlFor="range-max" className="mb-1 block text-sm text-silver">
                             最大值: <span className="font-medium">{rangeMax}</span>
                             {stats && (
-                                <span className="ml-1 text-gray-400">
+                                <span className="ml-1 text-silver">
                                     (训练: {stats.max})
                                 </span>
                             )}
@@ -306,19 +306,19 @@ export default function WhatIfPage() {
                     <button
                         onClick={() => runAnalysis(debouncedMin, debouncedMax)}
                         disabled={isLoading}
-                        className="rounded-[12px] bg-kraken px-4 py-1.5 text-sm font-medium text-white hover:bg-kraken-deep disabled:opacity-50"
+                        className="btn-primary disabled:opacity-50"
                     >
                         {isLoading ? "分析中..." : "运行分析"}
                     </button>
                     <button
                         onClick={clearCurves}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="btn-secondary"
                     >
                         清除曲线
                     </button>
                     <button
                         onClick={resetDefaults}
-                        className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                        className="btn-secondary"
                     >
                         恢复默认
                     </button>
@@ -327,7 +327,7 @@ export default function WhatIfPage() {
 
             {/* 外推警告 */}
             {isExtrapolating && (
-                <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+                <div className="mb-6 rounded-lg border border-warning/40 bg-warning-soft p-3 text-sm text-warning">
                     ⚠️ 当前范围超出训练数据（{field.label}: {stats?.min}–{stats?.max}）。
                     线性模型在外推时可能产生不准确的预测。
                 </div>
@@ -335,7 +335,7 @@ export default function WhatIfPage() {
 
             {/* 负价格警告 */}
             {hasNegativePrediction && (
-                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                <div className="mb-6 rounded-lg border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
                     ⚠️ 检测到负预测价格。当前模型在训练数据范围外线性外推时不可靠，
                     请将特征范围缩小到训练数据范围内。
                 </div>
@@ -343,15 +343,15 @@ export default function WhatIfPage() {
 
             {/* 错误 */}
             {error && (
-                <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                <div className="mb-6 rounded-lg border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
                     {error}
                 </div>
             )}
 
             {/* 折线图 */}
             {mergedData.length > 0 && (
-                <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                    <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div className="rounded-xl border border-line bg-surface p-6">
+                    <h3 className="mb-4 text-sm font-medium text-ink">
                         预测价格 vs 特征值
                     </h3>
                     <ResponsiveContainer width="100%" height={400}>
@@ -403,8 +403,8 @@ export default function WhatIfPage() {
 
             {/* 空状态 */}
             {mergedData.length === 0 && !error && (
-                <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-gray-900">
-                    <p className="text-gray-500 dark:text-gray-400">
+                <div className="rounded-xl border border-dashed border-line bg-surface-subtle p-12 text-center">
+                    <p className="text-coolgray">
                         调整滑块范围，点击「运行分析」查看预测价格变化曲线。
                     </p>
                 </div>

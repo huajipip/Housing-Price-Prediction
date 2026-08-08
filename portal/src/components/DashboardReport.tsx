@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 12,
-        color: "#6b7280",
+        color: "#686b82",
         marginBottom: 24,
     },
     sectionTitle: {
@@ -59,16 +59,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingBottom: 4,
         borderBottom: "2 solid #7132f5",
-        color: "#1e40af",
+        color: "#5741d8",
     },
     statRow: {
         flexDirection: "row",
         paddingVertical: 5,
-        borderBottom: "1 solid #e5e7eb",
+        borderBottom: "1 solid #dedee5",
     },
     statLabel: {
         width: "40%",
-        color: "#4b5563",
+        color: "#686b82",
     },
     statValue: {
         width: "60%",
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     distLabel: {
         width: "28%",
         fontSize: 9,
-        color: "#4b5563",
+        color: "#686b82",
     },
     distBar: {
         height: 14,
@@ -104,9 +104,9 @@ const styles = StyleSheet.create({
         left: 40,
         right: 40,
         fontSize: 9,
-        color: "#9ca3af",
+        color: "#9497a9",
         textAlign: "center",
-        borderTop: "1 solid #e5e7eb",
+        borderTop: "1 solid #dedee5",
         paddingTop: 8,
     },
 });

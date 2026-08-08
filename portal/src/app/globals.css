@@ -11,6 +11,14 @@
   --foreground: #101114;
   /* Near Black */
 
+  /* 语义表面（暗色模式自动翻转，组件无需再写 dark:bg-*） */
+  --surface: #ffffff;
+  /* 卡片/面板 */
+  --surface-subtle: #f6f6f8;
+  /* 次级表面：表头/骨架/弱底色 */
+  --input: #ffffff;
+  /* 输入框 */
+
   /* Kraken 品牌紫（单一品牌色） */
   --color-kraken: #7132f5;
   /* 主 CTA / 链接 */
@@ -38,10 +46,17 @@
   --color-success-dark: #026b3f;
   /* 徽章文字 */
   --color-success-soft: rgba(20, 158, 97, 0.16);
+  /* 危险/错误（DESIGN.md 未定义，补齐为令牌） */
+  --color-danger: #b42318;
+  --color-danger-soft: rgba(180, 35, 24, 0.08);
+  /* 警告/提示（琥珀） */
+  --color-warning: #b45309;
+  --color-warning-soft: rgba(180, 83, 9, 0.08);
 
-  /* 字体（Kraken-Brand / Kraken-Product 的兼容回退栈） */
-  --font-display: "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* 字体（IBM Plex Sans 由 next/font 注入 --font-plex，
+     实现 Kraken-Brand(Display) / Kraken-Product(Body) 双字体体系） */
+  --font-display: var(--font-plex), "IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-body: var(--font-plex), "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* 圆角 & 阴影 */
   --radius-btn: 12px;
@@ -69,6 +84,15 @@
   --color-success: var(--color-success);
   --color-success-dark: var(--color-success-dark);
   --color-success-soft: var(--color-success-soft);
+  --color-danger: var(--color-danger);
+  --color-danger-soft: var(--color-danger-soft);
+  --color-warning: var(--color-warning);
+  --color-warning-soft: var(--color-warning-soft);
+
+  /* 语义表面（暗色自动翻转） */
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-input: var(--input);
 
   /* 圆角 & 阴影 */
   --radius-btn: var(--radius-btn);
@@ -76,16 +100,39 @@
   --shadow-micro: var(--shadow-micro);
 }
 
+/* 暗色模式：只需覆盖令牌，组件无需再写 dark:bg-* / dark:text-* */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+
+    --surface: #111827;
+    /* 与原有 gray-900 卡片一致 */
+    --surface-subtle: #1f2937;
+    /* 与原有 gray-800 次级表面一致 */
+    --input: #1f2937;
+    /* 与原有 gray-800 输入框一致 */
+
+    --color-ink: #f3f4f6;
+    --color-coolgray: #9ca3af;
+    --color-silver: #6b7280;
+    --color-line: #2b2b35;
+
+    --color-success: #34d399;
+    --color-success-dark: #6ee7b7;
+    --color-success-soft: rgba(52, 211, 153, 0.14);
+    --color-danger: #fca5a5;
+    --color-danger-soft: rgba(252, 165, 165, 0.12);
+    --color-warning: #fbbf24;
+    --color-warning-soft: rgba(251, 191, 36, 0.12);
+
+    --shadow-subtle: 0 4px 24px rgba(0, 0, 0, 0.35);
   }
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
+  color: var(--color-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
@@ -102,8 +149,14 @@ h3 {
  * 通用组件类（Kraken 规范）
  * ============================================================ */
 
-/* 主 CTA：Kraken 紫，12px 圆角 */
-.btn-kraken {
+/* ---- 按钮（DESIGN.md：所有按钮 12px 圆角 + 13px 16px 内边距） ---- */
+
+/* 主 CTA：Kraken 紫 */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: var(--color-kraken);
   color: #ffffff;
   border-radius: var(--radius-btn);
@@ -113,17 +166,45 @@ h3 {
   transition: background-color 0.15s ease;
 }
 
-.btn-kraken:hover {
+.btn-primary:hover {
   background: var(--color-kraken-deep);
 }
 
-.btn-kraken:disabled {
+.btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* 紫色描边变体 */
+/* 次级：中性灰（DESIGN.md Secondary Gray） */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(148, 151, 169, 0.08);
+  color: var(--color-ink);
+  border-radius: var(--radius-btn);
+  padding: 13px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(148, 151, 169, 0.16);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 紫色描边变体（DESIGN.md Purple Outlined） */
 .btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: #ffffff;
   color: var(--color-kraken-dark);
   border: 1px solid var(--color-kraken-dark);
@@ -138,19 +219,65 @@ h3 {
   background: var(--color-kraken-soft);
 }
 
-/* 卡片：白底 + 细边框 + 微妙阴影 */
+.btn-outline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 危险操作（删除/清空） */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+  border-radius: var(--radius-btn);
+  padding: 13px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.btn-danger:hover {
+  background: var(--color-danger-soft);
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 卡片：语义表面 + 细边框 + 微妙阴影（DESIGN.md Depth） */
 .card {
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--color-line);
   border-radius: 12px;
   box-shadow: var(--shadow-subtle);
 }
 
-/* 成功徽章（正值/成功态） */
+/* 徽章（DESIGN.md：成功 6px 圆角；危险为补充） */
 .badge-success {
   background: var(--color-success-soft);
   color: var(--color-success-dark);
   border-radius: 6px;
+}
+
+.badge-danger {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-radius: 6px;
+}
+
+/* ============================================================
+ * 无障碍：键盘焦点可见（WCAG 2.4.7 Focus Visible）
+ * 输入框已有 focus:ring，这里统一给链接/按钮/下拉补焦点环
+ * ============================================================ */
+
+:where(a, button, [role="button"], select, summary):focus-visible {
+  outline: 2px solid var(--color-kraken);
+  outline-offset: 2px;
 }
 
 /* ============================================================
