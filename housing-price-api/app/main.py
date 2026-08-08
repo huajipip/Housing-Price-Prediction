@@ -141,7 +141,7 @@ async def model_info() -> ModelInfoResponse:
 
 
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
-async def predict(
+def predict(
     payload: Union[HouseFeatures, list[HouseFeatures]],
 ) -> PredictionResponse:
     """

@@ -1,0 +1,37 @@
+{
+  "square_footage": {
+    "min": 980.0,
+    "max": 2400.0,
+    "mean": 1690.2
+  },
+  "bedrooms": {
+    "min": 2.0,
+    "max": 4.0,
+    "mean": 3.04
+  },
+  "bathrooms": {
+    "min": 1.0,
+    "max": 3.0,
+    "mean": 1.85
+  },
+  "year_built": {
+    "min": 1978.0,
+    "max": 2012.0,
+    "mean": 1996.26
+  },
+  "lot_size": {
+    "min": 4400.0,
+    "max": 10500.0,
+    "mean": 7232.0
+  },
+  "distance_to_city_center": {
+    "min": 2.1,
+    "max": 8.2,
+    "mean": 4.638
+  },
+  "school_rating": {
+    "min": 6.5,
+    "max": 9.1,
+    "mean": 7.774
+  }
+}

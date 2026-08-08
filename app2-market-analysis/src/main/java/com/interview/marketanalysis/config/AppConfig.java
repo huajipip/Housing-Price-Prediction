@@ -9,8 +9,8 @@ import org.springframework.web.client.RestClient;
 /**
  * 应用配置：创建 RestClient Bean 用于调用 Task 1。
  *
- * <p>使用 Java 21 内置的 RestClient（替代 RestTemplate），
- * 支持同步阻塞调用。Task 1 调用场景简单，无需 WebClient 的响应式能力。
+ * <p>使用 Java 21 内置的 RestClient，
+ * 无需引入额外依赖。RestClient 是同步阻塞的，适合简单的 HTTP 调用场景。
  */
 @Configuration
 public class AppConfig {

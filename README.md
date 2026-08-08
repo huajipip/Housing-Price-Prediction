@@ -35,17 +35,51 @@
 | `app2-market-analysis/` | App2：房产市场分析 | Java 21 + Spring Boot 3.4.4 | 8002 |
 | `portal/` | 统一门户 | Next.js 16 (App Router) + Tailwind CSS + RSC | 3000 |
 
-## 一键启动
+## 快速启动（Quick Start）
+
+前置工具：**Git、Docker（含 Compose）**。仅当你想重新训练模型时，才需要本地的 **Python 3.12+**。
+
+### 方式 A：直接启动（模型已随仓库提交）✅ 推荐
+
+模型产物（`model.joblib`、`scaler.joblib`、`metrics.json`、`feature_stats.json`）已包含在仓库中，**无需训练**即可启动：
 
 ```bash
+git clone <your-repo-url>
+cd <repo>
 docker compose up --build
 ```
 
-启动后访问：
-- 门户入口：http://localhost:3000
-- Task 1 Swagger：http://localhost:8000/docs
-- App1 文档：http://localhost:8001/docs
-- App2 健康：http://localhost:8002/api/app2/health
+> 首次构建需联网：App2（Spring Boot）通过 Maven 拉取依赖，portal 通过 npm 安装依赖；
+> 之后 Docker 会缓存层，再次构建更快。
+
+### 方式 B：重新训练模型（可选，复现训练过程）
+
+如果想从数据集重新生成模型，在启动前执行：
+
+```bash
+cd housing-price-api
+pip install -r requirements.txt   # 训练依赖（pandas/scikit-learn/joblib）
+python train.py                    # 从 my-asset/House Price Dataset.csv 训练并生成模型
+cd ..
+docker compose up --build
+```
+
+### 运行单元测试（Task 1）
+
+```bash
+cd housing-price-api
+pip install -r requirements-dev.txt
+python -m pytest -v    # 7 passed
+```
+
+### 服务地址
+
+| 服务 | 地址 |
+|------|------|
+| 统一门户（Next.js） | http://localhost:3000 |
+| Task 1 预测 API（Swagger） | http://localhost:8000/docs |
+| App1 后端（FastAPI） | http://localhost:8001/docs |
+| App2 后端（Spring Boot 健康检查） | http://localhost:8002/api/app2/health |
 
 ## 核心功能
 

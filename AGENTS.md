@@ -33,6 +33,12 @@
 （每次开始新阶段时更新这里）
 目前处于：Task 2 — ✅ 全部 9 步完成
 
+### 增量：Task 1 单元测试（2026-08-08）
+- 新增 `housing-price-api/tests/test_api.py` — 7 个接口契约测试（health / 单个预测 / 批量 / 缺字段 422 / 越界 422 / 批量上限 422 / model-info）
+- 新增 `housing-price-api/conftest.py` — session 级 TestClient fixture，触发 lifespan 加载真实模型
+- 新增 `housing-price-api/requirements-dev.txt` — pytest + httpx（不污染生产镜像）
+- 运行：`cd housing-price-api && python -m pytest -v`（当前 7 passed）
+
 ## 禁止事项
 - 不要使用与规定技术栈不符的框架或库
 - 不要生成与当前阶段无关的代码
