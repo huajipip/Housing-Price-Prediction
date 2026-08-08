@@ -6,17 +6,26 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
+
 /**
  * 应用配置：创建 RestClient Bean 用于调用 Task 1。
  *
  * <p>使用 Java 21 内置的 RestClient，
  * 无需引入额外依赖。RestClient 是同步阻塞的，适合简单的 HTTP 调用场景。
+ * 连接/读取超时从 application.yml 读取，便于按环境调整。
  */
 @Configuration
 public class AppConfig {
 
     @Value("${app.task1.base-url}")
     private String task1BaseUrl;
+
+    @Value("${app.task1.timeout.connect-seconds:5}")
+    private int connectTimeoutSeconds;
+
+    @Value("${app.task1.timeout.read-seconds:10}")
+    private int readTimeoutSeconds;
 
     /**
      * 创建预配置的 RestClient，基准 URL 指向 Task 1 容器。
@@ -25,8 +34,8 @@ public class AppConfig {
     @Bean
     public RestClient task1RestClient() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(java.time.Duration.ofSeconds(5));
-        factory.setReadTimeout(java.time.Duration.ofSeconds(10));
+        factory.setConnectTimeout(Duration.ofSeconds(connectTimeoutSeconds));
+        factory.setReadTimeout(Duration.ofSeconds(readTimeoutSeconds));
 
         return RestClient.builder()
                 .baseUrl(task1BaseUrl)

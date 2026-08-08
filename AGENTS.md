@@ -39,6 +39,17 @@
 - 新增 `housing-price-api/requirements-dev.txt` — pytest + httpx（不污染生产镜像）
 - 运行：`cd housing-price-api && python -m pytest -v`（当前 7 passed）
 
+### 增量：Task 2 App2 单元测试（2026-08-09，未提交）
+- 新增 `app2-market-analysis/src/test/java/com/interview/marketanalysis/service/MarketAnalysisServiceTest.java` — 7 个纯 JUnit 单元测试（mock DataLoader，不启动 Spring 上下文）
+- 覆盖：聚合统计正确性 / 过滤 / 空数据边界 / 直方图 5 桶 / 相关性 7 特征 ∈[-1,1] / 散点数据量 / 未知特征报错
+- 运行：`cd app2-market-analysis && mvn test`（当前 7 passed，JDK 17 + Maven）
+
+### 增量：App2 异常处理 + WCAG（2026-08-09，未提交）
+- 新增 `GlobalExceptionHandler.java`（@RestControllerAdvice）：Task1 不可达/超时→502、上游 4xx/5xx→502、业务参数错→400、兜底→500；错误格式统一 `{error,message,detail}` 与 App1 对齐
+- `AppConfig.java` 超时参数化（`application.yml` 可配置 connect 5s / read 10s）
+- 新增 `GlobalExceptionHandlerTest.java` — 3 个 handler 单测（App2 现共 10 passed）
+- WCAG 补强：`ErrorDisplay` role=alert；estimate 表单 label htmlFor + aria-required/invalid/describedby + 错误 role=alert + 结果 aria-live + 图表 role=img；what-if 控件 label 关联；dashboard 6 个筛选 select label 关联
+
 ## 禁止事项
 - 不要使用与规定技术栈不符的框架或库
 - 不要生成与当前阶段无关的代码

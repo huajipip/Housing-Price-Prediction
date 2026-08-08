@@ -19,7 +19,10 @@ export default function ErrorDisplay({
     title = "加载失败",
 }: ErrorDisplayProps) {
     return (
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div
+            role="alert"
+            className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8"
+        >
             <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-800 dark:bg-red-950">
                 <div className="mb-4 text-4xl">⚠️</div>
                 <h2 className="mb-2 text-xl font-semibold text-red-800 dark:text-red-300">

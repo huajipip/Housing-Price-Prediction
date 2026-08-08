@@ -47,8 +47,9 @@ function FilterBar({
     return (
         <div className="flex flex-wrap gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最少卧室数</label>
+                <label htmlFor="f-min-bedrooms" className="mb-1 block text-xs text-gray-500">最少卧室数</label>
                 <select
+                    id="f-min-bedrooms"
                     value={filters.minBedrooms || ""}
                     onChange={(e) => onFilterChange("minBedrooms", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
@@ -60,8 +61,9 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最多卧室数</label>
+                <label htmlFor="f-max-bedrooms" className="mb-1 block text-xs text-gray-500">最多卧室数</label>
                 <select
+                    id="f-max-bedrooms"
                     value={filters.maxBedrooms || ""}
                     onChange={(e) => onFilterChange("maxBedrooms", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
@@ -73,8 +75,9 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最早建造年</label>
+                <label htmlFor="f-min-year" className="mb-1 block text-xs text-gray-500">最早建造年</label>
                 <select
+                    id="f-min-year"
                     value={filters.minYearBuilt || ""}
                     onChange={(e) => onFilterChange("minYearBuilt", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
@@ -86,8 +89,9 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最晚建造年</label>
+                <label htmlFor="f-max-year" className="mb-1 block text-xs text-gray-500">最晚建造年</label>
                 <select
+                    id="f-max-year"
                     value={filters.maxYearBuilt || ""}
                     onChange={(e) => onFilterChange("maxYearBuilt", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
@@ -99,8 +103,9 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最低学校评分</label>
+                <label htmlFor="f-min-school" className="mb-1 block text-xs text-gray-500">最低学校评分</label>
                 <select
+                    id="f-min-school"
                     value={filters.minSchoolRating || ""}
                     onChange={(e) => onFilterChange("minSchoolRating", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"
@@ -112,8 +117,9 @@ function FilterBar({
                 </select>
             </div>
             <div>
-                <label className="mb-1 block text-xs text-gray-500">最高学校评分</label>
+                <label htmlFor="f-max-school" className="mb-1 block text-xs text-gray-500">最高学校评分</label>
                 <select
+                    id="f-max-school"
                     value={filters.maxSchoolRating || ""}
                     onChange={(e) => onFilterChange("maxSchoolRating", e.target.value)}
                     className="rounded border border-gray-300 px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800"

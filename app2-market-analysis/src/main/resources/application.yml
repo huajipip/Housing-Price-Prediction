@@ -19,6 +19,9 @@ spring:
 app:
   task1:
     base-url: http://localhost:8000
+    timeout:
+      connect-seconds: 5   # Task 1 连接超时
+      read-seconds: 10     # Task 1 响应读取超时
 
 # Actuator 端点暴露
 management:

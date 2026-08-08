@@ -200,11 +200,15 @@ export default function WhatIfPage() {
                 <div className="grid gap-3 sm:grid-cols-4">
                     {Object.values(FIELD_META).map((f) => (
                         <div key={f.key}>
-                            <label className="mb-1 block text-xs text-gray-500">
+                            <label
+                                htmlFor={`whatif-${f.key}`}
+                                className="mb-1 block text-xs text-gray-500"
+                            >
                                 {f.label}
                             </label>
                             <input
                                 type="number"
+                                id={`whatif-${f.key}`}
                                 step={f.step}
                                 value={baseFeatures[f.key]}
                                 onChange={(e) =>
@@ -231,8 +235,9 @@ export default function WhatIfPage() {
                 <div className="flex flex-wrap items-end gap-4">
                     {/* 选择特征 */}
                     <div>
-                        <label className="mb-1 block text-xs text-gray-500">变化特征</label>
+                        <label htmlFor="vary-feature" className="mb-1 block text-xs text-gray-500">变化特征</label>
                         <select
+                            id="vary-feature"
                             value={varyFeature}
                             onChange={(e) => {
                                 const newFeature = e.target.value;
@@ -255,7 +260,7 @@ export default function WhatIfPage() {
 
                     {/* 最小值滑块 */}
                     <div>
-                        <label className="mb-1 block text-xs text-gray-500">
+                        <label htmlFor="range-min" className="mb-1 block text-xs text-gray-500">
                             最小值: <span className="font-medium">{rangeMin}</span>
                             {stats && (
                                 <span className="ml-1 text-gray-400">
@@ -265,6 +270,7 @@ export default function WhatIfPage() {
                         </label>
                         <input
                             type="range"
+                            id="range-min"
                             min={field.min}
                             max={field.max}
                             step={field.step}
@@ -276,7 +282,7 @@ export default function WhatIfPage() {
 
                     {/* 最大值滑块 */}
                     <div>
-                        <label className="mb-1 block text-xs text-gray-500">
+                        <label htmlFor="range-max" className="mb-1 block text-xs text-gray-500">
                             最大值: <span className="font-medium">{rangeMax}</span>
                             {stats && (
                                 <span className="ml-1 text-gray-400">
@@ -286,6 +292,7 @@ export default function WhatIfPage() {
                         </label>
                         <input
                             type="range"
+                            id="range-max"
                             min={field.min}
                             max={field.max}
                             step={field.step}

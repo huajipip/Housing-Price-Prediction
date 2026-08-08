@@ -156,7 +156,10 @@ export default function EstimatePage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                     {Object.values(FIELD_META).map((field) => (
                         <div key={field.key}>
-                            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <label
+                                htmlFor={field.key}
+                                className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                            >
                                 {field.label}
                                 <span className="ml-1 text-xs text-gray-400">
                                     ({field.unit})
@@ -164,8 +167,14 @@ export default function EstimatePage() {
                             </label>
                             <input
                                 type="number"
+                                id={field.key}
                                 step={field.step}
                                 placeholder={field.placeholder}
+                                aria-required="true"
+                                aria-invalid={errors[field.key] ? "true" : undefined}
+                                aria-describedby={
+                                    errors[field.key] ? `${field.key}-error` : undefined
+                                }
                                 {...register(field.key)}
                                 className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 dark:bg-gray-800 ${errors[field.key]
                                     ? "border-red-300 focus:ring-red-500 dark:border-red-700"
@@ -173,7 +182,11 @@ export default function EstimatePage() {
                                     }`}
                             />
                             {errors[field.key] && (
-                                <p className="mt-1 text-xs text-red-600">
+                                <p
+                                    id={`${field.key}-error`}
+                                    role="alert"
+                                    className="mt-1 text-xs text-red-600"
+                                >
                                     {errors[field.key]?.message}
                                 </p>
                             )}
@@ -231,14 +244,20 @@ export default function EstimatePage() {
 
             {/* 错误展示 */}
             {error && (
-                <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400">
+                <div
+                    role="alert"
+                    className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
+                >
                     {error}
                 </div>
             )}
 
             {/* 结果展示 */}
             {predictedPrice !== null && (
-                <div className="mt-8 space-y-6">
+                <div
+                    aria-live="polite"
+                    className="mt-8 space-y-6"
+                >
                     {/* 预测价格数字 */}
                     <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-950">
                         <p className="mb-2 text-sm text-green-700 dark:text-green-400">
@@ -253,7 +272,11 @@ export default function EstimatePage() {
                     </div>
 
                     {/* 柱状图 */}
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                    <div
+                        role="img"
+                        aria-label="预测价格柱状图"
+                        className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900"
+                    >
                         <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
                             预测结果可视化
                         </h3>
