@@ -48,8 +48,8 @@ export default function WhatIfPage() {
     // 页面加载时获取模型信息（含训练数据范围）
     useEffect(() => {
         app1Api.getModelInfo().then((data) => {
-            const stats = (data as Record<string, unknown>).feature_stats;
-            if (stats) setFeatureStats(stats as Record<string, FeatureStats>);
+            const stats = data.feature_stats;
+            if (stats) setFeatureStats(stats);
         }).catch(() => { /* 静默失败，使用 FIELD_META 兜底 */ });
     }, []);
 

@@ -12,6 +12,7 @@ import type {
     ErrorResponse,
     HealthResponse,
     HouseFeatures,
+    ModelInfo,
     PredictionResponse,
     ScatterResponse,
     StatsResponse,
@@ -75,9 +76,9 @@ export const app1Api = {
             body: JSON.stringify({ houses }),
         }),
 
-    /** 模型信息 */
+    /** 模型信息（含 coefficients / intercept / metrics / feature_stats） */
     getModelInfo: () =>
-        request<Record<string, unknown>>(`${APP1_BASE_URL}/api/app1/model-info`),
+        request<ModelInfo>(`${APP1_BASE_URL}/api/app1/model-info`),
 
     /** 健康检查 */
     health: () =>

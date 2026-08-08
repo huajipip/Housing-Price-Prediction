@@ -1,17 +1,19 @@
 "use client";
 
 /**
- * 批量对比页 — 多条房源并列对比分析。
+ * 批量对比页 — 多条房源并列对比分析（需求 v：对比视图）。
  *
  * 功能：
- * - 手动逐行添加房源
- * - CSV 文件上传解析
- * - 批量调用 App1 后端 /predict/batch
- * - 表格展示 + 柱状图对比（高亮最高/最低价）
+ * - 批量预测工具区（顶部）：手动逐行添加 / CSV 上传 / 批量预测
+ * - 对比分析视图（结果区）：
+ *   - 对比摘要（最贵/最便宜/价差/特征差异最大维度）
+ *   - 结果排序（按预测价格升/降序，仅作用于对比视图）
+ *   - 并排信息卡（side-by-side，每套一张卡 + 特征相对数据集均值的偏离标记）
+ *   - 柱状图对比（高亮最高/最低价 + 数据集基准价参考线）
  * - 单次上限 20 条
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import {
     BarChart,
     Bar,
@@ -21,12 +23,13 @@ import {
     Tooltip,
     ResponsiveContainer,
     Cell,
+    ReferenceLine,
 } from "recharts";
 import Papa from "papaparse";
 import { FIELD_META } from "@/lib/constants";
 import { app1Api } from "@/lib/api";
 import { usePredictionHistory } from "@/hooks/usePredictionHistory";
-import type { HouseFeatures } from "@/lib/types";
+import type { HouseFeatures, ModelInfo } from "@/lib/types";
 
 const MAX_ROWS = 20;
 
@@ -53,7 +56,27 @@ export default function ComparePage() {
     >(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    /** 结果区排序：null=原始顺序 / asc=价格升序 / desc=价格降序（不影响顶部输入表格） */
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+    /** 模型信息（含 feature_stats 均值），用于特征差异标记与图表基准线 */
+    const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null);
     const { addEntries } = usePredictionHistory();
+
+    // 挂载时加载模型信息；失败则静默降级（隐藏均值标记/基准线，不阻塞对比功能）
+    useEffect(() => {
+        let cancelled = false;
+        app1Api
+            .getModelInfo()
+            .then((info) => {
+                if (!cancelled) setModelInfo(info);
+            })
+            .catch(() => {
+                if (!cancelled) setModelInfo(null);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     /** 更新某行的某个字段 */
     const updateRow = useCallback(
@@ -174,6 +197,53 @@ export default function ComparePage() {
     // 找出最高/最低价
     const maxPrice = results ? Math.max(...results.map((r) => r.predictedPrice)) : 0;
     const minPrice = results ? Math.min(...results.map((r) => r.predictedPrice)) : 0;
+
+    /** 结果区排序（仅作用于对比视图，不影响上方输入表格顺序） */
+    const sortedResults = useMemo(() => {
+        if (!results) return [];
+        if (!sortOrder) return results;
+        const copy = [...results];
+        copy.sort((a, b) =>
+            sortOrder === "asc"
+                ? a.predictedPrice - b.predictedPrice
+                : b.predictedPrice - a.predictedPrice
+        );
+        return copy;
+    }, [results, sortOrder]);
+
+    /** 对比摘要：最贵/最便宜/价差/特征差异最大维度 */
+    const summary = useMemo(() => {
+        if (!results || results.length === 0) return null;
+        // 遍历 7 个特征，找出"跨度最大"（max-min）的维度
+        let biggestKey: keyof HouseFeatures | null = null;
+        let biggestDiff = -1;
+        for (const f of Object.values(FIELD_META)) {
+            const vals = results.map((r) => r[f.key]);
+            const diff = Math.max(...vals) - Math.min(...vals);
+            if (diff > biggestDiff) {
+                biggestDiff = diff;
+                biggestKey = f.key;
+            }
+        }
+        return {
+            spread: maxPrice - minPrice,
+            biggestLabel: biggestKey ? FIELD_META[biggestKey].label : null,
+            biggestDiff,
+        };
+    }, [results, maxPrice, minPrice]);
+
+    /** 判断某特征值相对数据集均值的偏离方向（2% 容差避免浮点抖动误判） */
+    const diffVsMean = (
+        key: keyof HouseFeatures,
+        value: number
+    ): "high" | "low" | "eq" => {
+        const stat = modelInfo?.feature_stats?.[key];
+        if (!stat) return "eq";
+        const mean = stat.mean;
+        if (value > mean * 1.02) return "high";
+        if (value < mean * 0.98) return "low";
+        return "eq";
+    };
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -313,50 +383,200 @@ export default function ComparePage() {
                 </div>
             )}
 
-            {/* 图表对比 */}
+            {/* ============ 对比分析视图（需求 v：并排分析多个房产） ============ */}
             {results && results.length > 0 && (
-                <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
-                    <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        价格对比图
-                        <span className="ml-2 text-xs text-gray-400">
-                            （🟢 最高价 &nbsp; 🔴 最低价）
-                        </span>
-                    </h3>
-                    <ResponsiveContainer width="100%" height={Math.max(250, results.length * 40)}>
-                        <BarChart
-                            data={results.map((r, i) => ({
-                                name: `#${i + 1}`,
-                                price: r.predictedPrice,
-                            }))}
-                            layout="vertical"
+                <div className="mt-8 space-y-6">
+                    {/* ① 对比摘要 */}
+                    <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
+                        <h3 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            对比分析摘要
+                        </h3>
+                        {summary && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                共 {results.length} 套房源：
+                                <span className="font-semibold text-green-600 dark:text-green-400">
+                                    {" "}最贵 #
+                                    {results.findIndex((r) => r.predictedPrice === maxPrice) + 1}（$
+                                    {maxPrice.toLocaleString("en-US", { maximumFractionDigits: 2 })}）
+                                </span>
+                                、
+                                <span className="font-semibold text-red-600 dark:text-red-400">
+                                    {" "}最便宜 #
+                                    {results.findIndex((r) => r.predictedPrice === minPrice) + 1}（$
+                                    {minPrice.toLocaleString("en-US", { maximumFractionDigits: 2 })}）
+                                </span>
+                                ，价差 $
+                                {summary.spread.toLocaleString("en-US", { maximumFractionDigits: 2 })}。
+                                {summary.biggestLabel && (
+                                    <>
+                                        {" "}特征差异最大的维度是「{summary.biggestLabel}」（跨度{" "}
+                                        {summary.biggestDiff.toLocaleString()}）。
+                                    </>
+                                )}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* ② 排序控制（仅作用于对比视图） */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">排序：</span>
+                        {(
+                            [
+                                { value: null, label: "原始顺序" },
+                                { value: "asc", label: "价格从低到高 ↑" },
+                                { value: "desc", label: "价格从高到低 ↓" },
+                            ] as const
+                        ).map((opt) => (
+                            <button
+                                key={opt.label}
+                                onClick={() => setSortOrder(opt.value)}
+                                aria-pressed={sortOrder === opt.value}
+                                className={`rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${sortOrder === opt.value
+                                        ? "border-kraken bg-kraken text-white"
+                                        : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                                    }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* ③ 并排对比卡片（side-by-side） */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        {sortedResults.map((r, i) => {
+                            const isMax = r.predictedPrice === maxPrice;
+                            const isMin = r.predictedPrice === minPrice;
+                            return (
+                                <div
+                                    key={r.id}
+                                    className={`rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-900 ${isMax
+                                            ? "border-green-400 ring-1 ring-green-400"
+                                            : isMin
+                                                ? "border-red-400 ring-1 ring-red-400"
+                                                : "border-gray-200 dark:border-gray-700"
+                                        }`}
+                                >
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            房源 #{i + 1}
+                                        </span>
+                                        {isMax && (
+                                            <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                                                最高价
+                                            </span>
+                                        )}
+                                        {isMin && (
+                                            <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
+                                                最低价
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div
+                                        className={`mb-3 text-2xl font-bold ${isMax
+                                                ? "text-green-600 dark:text-green-400"
+                                                : isMin
+                                                    ? "text-red-600 dark:text-red-400"
+                                                    : "text-kraken"
+                                            }`}
+                                    >
+                                        $
+                                        {r.predictedPrice.toLocaleString("en-US", {
+                                            maximumFractionDigits: 2,
+                                        })}
+                                    </div>
+                                    <ul className="space-y-1 border-t border-gray-100 pt-3 dark:border-gray-800">
+                                        {Object.values(FIELD_META).map((f) => {
+                                            const dir = diffVsMean(f.key, r[f.key]);
+                                            return (
+                                                <li
+                                                    key={f.key}
+                                                    className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400"
+                                                    title={`数据集均值约 ${modelInfo?.feature_stats?.[f.key]?.mean ?? "—"}`}
+                                                >
+                                                    <span>{f.label}</span>
+                                                    <span className="flex items-center gap-1">
+                                                        {dir === "high" && (
+                                                            <span aria-label="高于均值" className="text-green-600">▲</span>
+                                                        )}
+                                                        {dir === "low" && (
+                                                            <span aria-label="低于均值" className="text-red-600">▼</span>
+                                                        )}
+                                                        {r[f.key]}
+                                                        <span className="text-gray-400">{f.unit}</span>
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* ④ 价格对比图（含数据集基准价参考线） */}
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+                        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            价格对比图
+                            <span className="ml-2 text-xs text-gray-400">
+                                （🟢 最高价 &nbsp; 🔴 最低价
+                                {modelInfo && " &nbsp; ┅ 数据集基准价"})
+                            </span>
+                        </h3>
+                        <ResponsiveContainer
+                            width="100%"
+                            height={Math.max(250, sortedResults.length * 40)}
                         >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis type="number" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-                            <YAxis type="category" dataKey="name" width={40} />
-                            <Tooltip
-                                formatter={(value) => [
-                                    `$${Number(value).toLocaleString("en-US", {
-                                        minimumFractionDigits: 2,
-                                    })}`,
-                                    "预测价格",
-                                ]}
-                            />
-                            <Bar dataKey="price" radius={[0, 4, 4, 0]}>
-                                {results.map((r) => (
-                                    <Cell
-                                        key={r.id}
-                                        fill={
-                                            r.predictedPrice === maxPrice
-                                                ? "#22c55e"
-                                                : r.predictedPrice === minPrice
-                                                    ? "#ef4444"
-                                                    : "#7132f5"
-                                        }
+                            <BarChart
+                                data={sortedResults.map((r, i) => ({
+                                    name: `#${i + 1}`,
+                                    price: r.predictedPrice,
+                                }))}
+                                layout="vertical"
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    type="number"
+                                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                                />
+                                <YAxis type="category" dataKey="name" width={40} />
+                                <Tooltip
+                                    formatter={(value) => [
+                                        `$${Number(value).toLocaleString("en-US", {
+                                            minimumFractionDigits: 2,
+                                        })}`,
+                                        "预测价格",
+                                    ]}
+                                />
+                                {modelInfo && (
+                                    <ReferenceLine
+                                        x={modelInfo.intercept}
+                                        stroke="#9ca3af"
+                                        strokeDasharray="3 3"
+                                        label={{
+                                            value: "基准价",
+                                            position: "insideTopLeft",
+                                            fontSize: 11,
+                                            fill: "#9ca3af",
+                                        }}
                                     />
-                                ))}
-                            </Bar>
-                        </BarChart>
-                    </ResponsiveContainer>
+                                )}
+                                <Bar dataKey="price" radius={[0, 4, 4, 0]}>
+                                    {sortedResults.map((r) => (
+                                        <Cell
+                                            key={r.id}
+                                            fill={
+                                                r.predictedPrice === maxPrice
+                                                    ? "#22c55e"
+                                                    : r.predictedPrice === minPrice
+                                                        ? "#ef4444"
+                                                        : "#7132f5"
+                                            }
+                                        />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             )}
         </div>
