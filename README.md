@@ -64,12 +64,17 @@ cd ..
 docker compose up --build
 ```
 
-### 运行单元测试（Task 1）
+### 运行单元测试
 
 ```bash
+# Task 1（Python，需 Python 3.12+）
 cd housing-price-api
 pip install -r requirements-dev.txt
 python -m pytest -v    # 7 passed
+
+# App2（Java，需 JDK 17 + Maven）
+cd ../app2-market-analysis
+mvn test               # 7 passed
 ```
 
 ### 服务地址
