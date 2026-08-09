@@ -67,14 +67,14 @@ docker compose up --build
 ### 运行单元测试
 
 ```bash
-# Task 1（Python，需 Python 3.12+）
+# Task 1
 cd housing-price-api
 pip install -r requirements-dev.txt
 python -m pytest -v    # 7 passed
 
-# App2（Java，需 JDK 17 + Maven）
+# App2
 cd ../app2-market-analysis
-mvn test               # 7 passed
+mvn test               # 10 passed
 ```
 
 ### 服务地址
@@ -95,16 +95,15 @@ mvn test               # 7 passed
 
 **App1 — 房源估值器**（Python 后端）
 - 单条预测表单（7 特征字段 + 客户端/后端双重校验）
-- 批量对比（表格 + CSV 上传 + 最高/最低高亮 + 排序）
+- 批量对比视图（并排信息卡 + 对比摘要 + 价格排序 + 特征偏离标记 + 图表基准线）
 - 历史记录（localStorage + 一键回填）
 
 **App2 — 市场分析**（Java 后端）
-- 交互式仪表盘（统计卡片 + 直方图 + 散点图 + 区间筛选）
+- 交互式仪表盘（统计卡片 + 直方图 + 散点图 + 相关性 + 区间筛选）
 - What-If 分析（滑块实时模拟 + 多特征曲线叠加 + 中位数重置）
 - 数据导出（筛选 CSV + PDF 报告，Caffeine 缓存优化）
+- 统一异常处理（Task 1 不可达/超时→502、参数错→400、兜底→500）+ 超时参数化
 
-## 文档
-
-- `REQUIREMENTS-AUDIT.md` — 需求对照审计 + 修复记录
-- `ISSUES.md` — 遗留问题清单
-- `my-asset/Task2-Requirements.md` — 需求详解
+**门户 — 统一体验**（Next.js）
+- 设计系统落地：IBM Plex Sans 双字体 + 语义色彩令牌
+- WCAG 无障碍：子导航激活态、焦点环、表单标签关联、aria-live/alert

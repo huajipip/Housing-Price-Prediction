@@ -42,6 +42,15 @@ docker compose up --build
 
 打开 **http://localhost:8000/docs** 查看交互式 Swagger UI 文档。
 
+### 4. 运行单元测试
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -v    # 7 passed
+```
+
+测试用例覆盖：健康检查、单个预测、批量预测、缺字段（422）、越界（422）、批量上限（422）、model-info。
+
 ---
 
 ## API 端点
@@ -137,14 +146,19 @@ housing-price-api/
 │   ├── model.py         # 模型加载器 + 预测器类
 │   └── schemas.py       # Pydantic 请求/响应模型
 ├── models/
-│   ├── scaler.joblib    # 已拟合的 StandardScaler
-│   ├── model.joblib     # 已训练的 LinearRegression
-│   └── metrics.json     # 性能指标
-├── train.py             # 独立训练脚本
-├── requirements.txt     # Python 依赖
-├── Dockerfile           # 容器镜像定义
-├── docker-compose.yml   # Docker Compose 编排文件
-└── README.md            # 本文件
+│   ├── scaler.joblib        # 已拟合的 StandardScaler
+│   ├── model.joblib         # 已训练的 LinearRegression
+│   ├── metrics.json         # 性能指标
+│   └── feature_stats.json   # 特征统计（min/max/mean，供门户展示）
+├── tests/
+│   └── test_api.py          # 接口契约测试（7 个用例）
+├── conftest.py              # pytest fixture（加载真实模型）
+├── train.py                 # 独立训练脚本
+├── requirements.txt         # 生产依赖
+├── requirements-dev.txt     # 测试依赖（pytest + httpx）
+├── Dockerfile               # 容器镜像定义
+├── docker-compose.yml       # Docker Compose 编排文件
+└── README.md                # 本文件
 ```
 
 ---
