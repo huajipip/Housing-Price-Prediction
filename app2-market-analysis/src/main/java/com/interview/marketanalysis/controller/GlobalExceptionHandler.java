@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.ResourceAccessException;
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器 — 统一所有 controller 的错误响应格式。
@@ -64,6 +66,21 @@ public class GlobalExceptionHandler {
         log.warn("非法参数: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(errorBody(ex.getMessage(), ex.getMessage()));
+    }
+
+    /**
+     * 输入参数校验失败（@Valid 触发，如 HouseFeatures 字段超出训练数据范围）。
+     *
+     * <p>返回 400 与 App1 的错误格式保持一致。
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationError(MethodArgumentNotValidException ex) {
+        log.warn("输入参数校验失败: {}", ex.getBindingResult().getFieldErrors());
+        String detail = ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(errorBody("输入参数校验失败，请检查字段范围。", detail));
     }
 
     /**

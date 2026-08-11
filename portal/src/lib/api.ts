@@ -38,7 +38,13 @@ async function request<T>(
         const err = body as ErrorResponse;
 
         // 后端返回统一错误结构：{ error, message, detail }
-        if (err.message) throw new Error(err.message);
+        // detail 含具体失败信息（如哪个字段超出合法范围），拼进 message 一并展示，
+        // 避免只显示笼统的提示而无法定位问题。
+        if (err.message) {
+            const detail =
+                err.detail && err.detail !== err.message ? `\n${err.detail}` : "";
+            throw new Error(err.message + detail);
+        }
 
         // FastAPI 422 校验错误：body 是 { detail: [...] }，无 message
         // 转换为用户可读的友好提示

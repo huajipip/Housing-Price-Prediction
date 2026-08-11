@@ -3,6 +3,7 @@ package com.interview.marketanalysis.controller;
 import com.interview.marketanalysis.dto.WhatIfRequest;
 import com.interview.marketanalysis.dto.WhatIfResponse;
 import com.interview.marketanalysis.service.WhatIfService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -25,7 +26,7 @@ public class WhatIfController {
      * 返回 (特征值, 预测价格) 数据点列表供前端画折线图。
      */
     @PostMapping("/what-if")
-    public WhatIfResponse analyze(@RequestBody WhatIfRequest request) {
+    public WhatIfResponse analyze(@RequestBody @Valid WhatIfRequest request) {
         return whatIfService.analyze(request);
     }
 }

@@ -1,14 +1,21 @@
 package com.interview.marketanalysis.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.ResourceAccessException;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * GlobalExceptionHandler 的单元测试（不启动 Spring 上下文）。
@@ -46,5 +53,24 @@ class GlobalExceptionHandlerTest {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resp.getStatusCode());
         assertTrue(((String) resp.getBody().get("message")).contains("内部错误"));
+    }
+
+    @Test
+    void validationError_returns400WithFieldDetails() {
+        // 模拟 @Valid 校验失败：某个字段超出训练数据范围
+        BindingResult binding = mock(BindingResult.class);
+        when(binding.getFieldErrors()).thenReturn(List.of(
+                new FieldError("houseFeatures", "bedrooms", "bedrooms 必须在 [2, 4] 范围内")
+        ));
+        MethodArgumentNotValidException ex =
+                new MethodArgumentNotValidException(mock(MethodParameter.class), binding);
+
+        ResponseEntity<Map<String, Object>> resp = handler.handleValidationError(ex);
+
+        // 参数错误 → 400，并携带具体字段信息
+        assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+        assertEquals(true, resp.getBody().get("error"));
+        assertTrue(((String) resp.getBody().get("message")).contains("校验失败"));
+        assertTrue(((String) resp.getBody().get("detail")).contains("bedrooms"));
     }
 }

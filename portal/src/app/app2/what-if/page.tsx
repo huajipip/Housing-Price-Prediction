@@ -11,7 +11,7 @@
  * - "恢复默认"按钮
  */
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import {
     LineChart,
     Line,
@@ -34,6 +34,27 @@ export default function WhatIfPage() {
     // 基准特征
     const [baseFeatures, setBaseFeatures] =
         useState<HouseFeatures>(DEFAULT_FEATURES);
+
+    // 检查基准特征中哪些字段超出训练数据范围（FIELD_META 与 feature_stats 一致）
+    // 越界的输入框立即红框标记，并在提交前拦截
+    const outOfRangeFields = useMemo(() => {
+        const invalid: Record<keyof HouseFeatures, boolean> = {
+            square_footage: false,
+            bedrooms: false,
+            bathrooms: false,
+            year_built: false,
+            lot_size: false,
+            distance_to_city_center: false,
+            school_rating: false,
+        };
+        Object.values(FIELD_META).forEach((f) => {
+            const v = baseFeatures[f.key];
+            if (typeof v === "number" && (v < f.min || v > f.max)) {
+                invalid[f.key] = true;
+            }
+        });
+        return invalid;
+    }, [baseFeatures]);
 
     // 当前变化特征
     const [varyFeature, setVaryFeature] = useState("square_footage");
@@ -85,6 +106,20 @@ export default function WhatIfPage() {
             setError(`范围无效：最小值 (${min}) 必须小于最大值 (${max})`);
             return;
         }
+
+        // 前端预校验：基准特征必须落在训练数据范围内（与后端 Bean Validation 一致）
+        // 命中即提示具体字段与合法范围，不发无效请求
+        const badField = Object.values(FIELD_META).find(
+            (f) => baseFeatures[f.key] < f.min || baseFeatures[f.key] > f.max
+        );
+        if (badField) {
+            setError(
+                `基准参数超出合法范围：${badField.label} 应为 ` +
+                `${badField.min}–${badField.max}，当前 ${baseFeatures[badField.key]}。`
+            );
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
@@ -209,6 +244,8 @@ export default function WhatIfPage() {
                             <input
                                 type="number"
                                 id={`whatif-${f.key}`}
+                                min={f.min}
+                                max={f.max}
                                 step={f.step}
                                 value={baseFeatures[f.key]}
                                 onChange={(e) =>
@@ -220,7 +257,11 @@ export default function WhatIfPage() {
                                                 : parseFloat(e.target.value) || 0,
                                     }))
                                 }
-                                className="w-full rounded border border-line bg-input px-2 py-1 text-sm"
+                                aria-invalid={outOfRangeFields[f.key] || undefined}
+                                className={`w-full rounded border px-2 py-1 text-sm ${outOfRangeFields[f.key]
+                                        ? "border-danger bg-danger-soft text-danger"
+                                        : "border-line bg-input"
+                                    }`}
                             />
                         </div>
                     ))}
@@ -343,7 +384,7 @@ export default function WhatIfPage() {
 
             {/* 错误 */}
             {error && (
-                <div className="mb-6 rounded-lg border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
+                <div className="mb-6 whitespace-pre-line rounded-lg border border-danger/40 bg-danger-soft p-3 text-sm text-danger">
                     {error}
                 </div>
             )}
