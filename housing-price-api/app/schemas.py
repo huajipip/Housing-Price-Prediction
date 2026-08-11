@@ -23,6 +23,7 @@ class HouseFeatures(BaseModel):
     square_footage: float = Field(
         ...,
         ge=1,
+        le=10000,
         description="总居住面积（平方英尺）",
         examples=[1500.0],
     )
@@ -50,12 +51,14 @@ class HouseFeatures(BaseModel):
     lot_size: float = Field(
         ...,
         ge=1,
+        le=50000,
         description="地块面积（平方英尺）",
         examples=[6800.0],
     )
     distance_to_city_center: float = Field(
         ...,
         ge=0,
+        le=50,
         description="距市中心距离（英里）",
         examples=[4.1],
     )
