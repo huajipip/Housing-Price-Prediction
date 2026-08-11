@@ -26,7 +26,7 @@ import {
     ReferenceLine,
 } from "recharts";
 import Papa from "papaparse";
-import { FIELD_META } from "@/lib/constants";
+import { FIELD_META, VALIDATION_META } from "@/lib/constants";
 import { app1Api } from "@/lib/api";
 import { usePredictionHistory } from "@/hooks/usePredictionHistory";
 import type { HouseFeatures, ModelInfo } from "@/lib/types";
@@ -154,7 +154,8 @@ export default function ComparePage() {
         rows.forEach((r, idx) => {
             if (
                 !r.square_footage || !r.bedrooms || !r.bathrooms ||
-                !r.year_built || !r.lot_size
+                !r.year_built || !r.lot_size ||
+                !r.distance_to_city_center || !r.school_rating
             ) {
                 incompleteRows.push(idx + 1);
             }
@@ -162,8 +163,28 @@ export default function ComparePage() {
         if (incompleteRows.length > 0) {
             setError(
                 `第 ${incompleteRows.join("、")} 行房源信息不完整，请填写全部特征` +
-                `（居住面积、卧室、浴室、建造年份、地块面积等）后再试。`
+                `（居住面积、卧室、浴室、建造年份、地块面积、距市中心距离、学校评分）后再试。`
             );
+            return;
+        }
+
+        // 范围校验：逐行逐字段，命中即指出具体行 + 字段 + 合法范围
+        // 用与 estimate 页一致的宽松范围（允许外推，只拦物理不合理值），
+        // 避免把所有错误笼统归成后端 422 提示。
+        const outOfRange: string[] = [];
+        rows.forEach((r, idx) => {
+            for (const f of Object.values(FIELD_META)) {
+                const v = r[f.key];
+                const rule = VALIDATION_META[f.key];
+                if (v < rule.min || v > rule.max) {
+                    outOfRange.push(
+                        `第 ${idx + 1} 行「${f.label}」应在 ${rule.min}–${rule.max} 之间（当前 ${v}）`
+                    );
+                }
+            }
+        });
+        if (outOfRange.length > 0) {
+            setError(outOfRange.join("；"));
             return;
         }
 

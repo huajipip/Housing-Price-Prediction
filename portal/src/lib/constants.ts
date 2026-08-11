@@ -109,6 +109,25 @@ export const FIELD_META: Record<keyof HouseFeatures, FieldMeta> = {
     },
 };
 
+/**
+ * 前端宽松校验范围（与 estimate 页 Zod schema / 后端 Pydantic 一致）。
+ *
+ * 预测链路允许外推：只拦截"物理上不合理"的值，范围比训练数据（FIELD_META）宽。
+ * 用于 compare 批量预测的提交前校验，给出具体到行 + 字段的友好提示。
+ */
+export const VALIDATION_META: Record<
+    keyof HouseFeatures,
+    { min: number; max: number }
+> = {
+    square_footage: { min: 500, max: 10000 },
+    bedrooms: { min: 1, max: 10 },
+    bathrooms: { min: 0.5, max: 10 },
+    year_built: { min: 1800, max: 2030 },
+    lot_size: { min: 1000, max: 50000 },
+    distance_to_city_center: { min: 0, max: 50 },
+    school_rating: { min: 0, max: 10 },
+};
+
 /** 默认房源特征值（训练数据均值，用于 What-If 预填） */
 export const DEFAULT_FEATURES: HouseFeatures = {
     square_footage: 1690,
